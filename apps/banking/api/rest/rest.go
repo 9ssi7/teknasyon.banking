@@ -35,5 +35,6 @@ func (s srv) Listen() error {
 	})
 	app.Use(restsrv.Cors(), restsrv.DeviceId(), restsrv.IpAddr())
 	routes.Auth(app, restsrv, s.app)
+	routes.Account(app, restsrv, s.app)
 	return app.Listen(fmt.Sprintf("%v:%v", configs.Http.Host, configs.Http.Port))
 }

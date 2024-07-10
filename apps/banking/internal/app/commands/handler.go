@@ -12,6 +12,14 @@ type Handlers struct {
 	AuthRefresh  AuthRefreshHandler
 	AuthLogout   AuthLogoutHandler
 	AuthVerify   AuthVerifyHandler
+
+	AccountCreate          AccountCreateHandler
+	AccountActivate        AccountActivateHandler
+	AccountFreeze          AccountFreezeHandler
+	AccountLock            AccountLockHandler
+	AccountSuspend         AccountSuspendHandler
+	AccountBalanceLoad     AccountBalanceLoadHandler
+	AccountBalanceWithdraw AccountBalanceWithdrawHandler
 }
 
 func NewHandler(r abstracts.Repositories, v validation.Service) Handlers {
@@ -22,5 +30,13 @@ func NewHandler(r abstracts.Repositories, v validation.Service) Handlers {
 		AuthRefresh:  NewAuthRefreshHandler(r.SessionRepo, r.UserRepo),
 		AuthRegister: NewAuthRegisterHandler(v, r.UserRepo),
 		AuthVerify:   NewAuthVerifyHandler(r.UserRepo),
+
+		AccountCreate:          NewAccountCreateHandler(v, r.AccountRepo),
+		AccountActivate:        NewAccountActivateHandler(v, r.AccountRepo),
+		AccountFreeze:          NewAccountFreezeHandler(v, r.AccountRepo),
+		AccountLock:            NewAccountLockHandler(v, r.AccountRepo),
+		AccountSuspend:         NewAccountSuspendHandler(v, r.AccountRepo),
+		AccountBalanceLoad:     NewAccountBalanceLoadHandler(v, r.AccountRepo),
+		AccountBalanceWithdraw: NewAccountBalanceWithdrawHandler(v, r.AccountRepo),
 	}
 }

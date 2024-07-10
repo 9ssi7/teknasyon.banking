@@ -23,4 +23,7 @@ const (
 	msgPermissionDenied  string = "permission_denied"
 	msgRecaptchaFailed   string = "recaptcha_failed"
 	msgRecaptchaRequired string = "recaptcha_required"
+
+	msgAccountBalanceInsufficient string = "account_balance_insufficient"
+	msgAccountNotAvailable        string = "account_not_available"
 )

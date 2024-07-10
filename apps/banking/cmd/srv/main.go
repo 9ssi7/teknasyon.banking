@@ -32,6 +32,7 @@ func main() {
 
 	r := abstracts.Repositories{
 		UserRepo:    repos.NewUserRepo(db),
+		AccountRepo: repos.NewAccountRepo(db),
 		SessionRepo: repos.NewSessionRepo(kvdb),
 		VerifyRepo:  repos.NewVerifyRepo(kvdb),
 	}

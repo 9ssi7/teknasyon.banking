@@ -4,8 +4,10 @@ import (
 	"reflect"
 	"regexp"
 
+	"github.com/9ssi7/banking/pkg/currency"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 )
 
 func validateUUID(field reflect.Value) interface{} {
@@ -16,6 +18,18 @@ func validateUUID(field reflect.Value) interface{} {
 		return valuer.String()
 	}
 	return nil
+}
+
+func validateAmount(fl validator.FieldLevel) bool {
+	d, err := decimal.NewFromString(fl.Field().String())
+	if err != nil {
+		return false
+	}
+	return d.GreaterThanOrEqual(decimal.Zero)
+}
+
+func validateCurrency(fl validator.FieldLevel) bool {
+	return currency.IsValid(fl.Field().String())
 }
 
 func validateUserName(fl validator.FieldLevel) bool {

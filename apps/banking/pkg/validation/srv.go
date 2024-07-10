@@ -32,6 +32,8 @@ func New() Service {
 	_ = v.RegisterValidation("slug", validateSlug)
 	_ = v.RegisterValidation("gender", validateGender)
 	_ = v.RegisterValidation("phone", validatePhone)
+	_ = v.RegisterValidation("currency", validateCurrency)
+	_ = v.RegisterValidation("amount", validateAmount)
 	return &srv{validator: v, uni: ut.New(tr.New(), en.New())}
 }
 

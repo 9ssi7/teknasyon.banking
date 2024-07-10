@@ -23,4 +23,7 @@ const (
 	codePermissionDenied  uint64 = 3101
 	codeRecaptchaFailed   uint64 = 3102
 	codeRecaptchaRequired uint64 = 3103
+
+	codeAccountBalanceInsufficient uint64 = 4000
+	codeAccountNotAvailable        uint64 = 4001
 )

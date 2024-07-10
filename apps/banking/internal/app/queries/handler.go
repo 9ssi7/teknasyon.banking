@@ -6,6 +6,8 @@ type Handlers struct {
 	AuthCheck         AuthCheckHandler
 	AuthVerifyAccess  AuthVerifyAccessHandler
 	AuthVerifyRefresh AuthVerifyRefreshHandler
+
+	AccountList AccountListHandler
 }
 
 func NewHandler(r abstracts.Repositories) Handlers {
@@ -13,5 +15,7 @@ func NewHandler(r abstracts.Repositories) Handlers {
 		AuthCheck:         NewAuthCheckHandler(r.VerifyRepo),
 		AuthVerifyAccess:  NewAuthVerifyAccessHandler(r.SessionRepo),
 		AuthVerifyRefresh: NewAuthVerifyRefreshHandler(r.SessionRepo),
+
+		AccountList: NewAccountListHandler(r.AccountRepo),
 	}
 }
