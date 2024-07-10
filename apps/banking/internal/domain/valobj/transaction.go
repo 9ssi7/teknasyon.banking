@@ -1,9 +1,9 @@
 package valobj
 
 type TransactionFilters struct {
-	StartDate string `query:"startDate" validate:"omitempty,datetime=2006-01-02"`
-	EndDate   string `query:"endDate" validate:"omitempty,datetime=2006-01-02"`
-	Kind      string `query:"kind" validate:"omitempty,oneof=withdrawal deposit transfer"`
+	StartDate string `query:"start_date" validate:"omitempty,datetime=2006-01-02"`
+	EndDate   string `query:"end_date" validate:"omitempty,datetime=2006-01-02"`
+	Kind      string `query:"kind" validate:"omitempty,oneof=withdrawal deposit transfer fee"`
 }
 
 type TransactionDirection string

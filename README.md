@@ -80,9 +80,13 @@ You can use the following commands to manage the project:
 
 - **Start the project**: `make start`
 - **Stop the project**: `make stop`
+- **Environment Variables**: `make env`
+- **JWT Secrets**: `make jwt`
+- **Docker Network**: `make network`
+- **Register JWT to Docker Secrets**: `make secret-register`
 - **Restart the project**: `make reload`
 - **Generate Requirements**: `make reqs`
-- **Clean the project**: `make clean`
+- **Clean the project**: `make clean`,
 
 ### SMTP Credentials
 

@@ -23,7 +23,8 @@
 							"path": [
 								"auth"
 							]
-						}
+						},
+						"description": "Parses current user public data"
 					},
 					"response": []
 				},
@@ -51,7 +52,7 @@
 								"register"
 							]
 						},
-						"description": "Starts the registration flow\n\n<img src=\"https://content.pstmn.io/3760fec8-c33e-4fbc-858e-7aab157ade57/U2NyZWVuc2hvdCAyMDI0LTA3LTEwIGF0IDE3LjAwLjAwLnBuZw==\" alt=\"\">"
+						"description": "Starts the registration flow.  \n  \nAfter this endpoint, you must be continue with Verify Registration endpoint.\n\n<img src=\"https://content.pstmn.io/3760fec8-c33e-4fbc-858e-7aab157ade57/U2NyZWVuc2hvdCAyMDI0LTA3LTEwIGF0IDE3LjAwLjAwLnBuZw==\">"
 					},
 					"response": []
 				},
@@ -79,7 +80,7 @@
 								"start"
 							]
 						},
-						"description": "Starts the login flow.\n\n<img src=\"https://content.pstmn.io/ef2293e6-9142-49e5-98e4-adac4afbf92e/U2NyZWVuc2hvdCAyMDI0LTA3LTEwIGF0IDE3LjAwLjA1LnBuZw==\" alt=\"\">"
+						"description": "Starts the login flow.\n\nAfter this endpoint, you must go Login endpoint.\n\n<img src=\"https://content.pstmn.io/ef2293e6-9142-49e5-98e4-adac4afbf92e/U2NyZWVuc2hvdCAyMDI0LTA3LTEwIGF0IDE3LjAwLjA1LnBuZw==\">"
 					},
 					"response": []
 				},
@@ -90,7 +91,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"code\": \"5889\"\n}",
+							"raw": "{\n    \"code\": \"9306\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -107,7 +108,7 @@
 								"login"
 							]
 						},
-						"description": "Completes the login flow\n\n<img src=\"https://content.pstmn.io/d60e7526-4a13-46e1-bc77-28c3d887e24b/U2NyZWVuc2hvdCAyMDI0LTA3LTEwIGF0IDE3LjAwLjA1LnBuZw==\" alt=\"\">"
+						"description": "Completes the login flow\n\nBefore this endpoint, you must go Start Login endpoint and get a 4-digit verification code.  \n  \nIf you not set SMTP credentials, you can access verification code in the localhost's redis with db 0.\n\n<img src=\"https://content.pstmn.io/d60e7526-4a13-46e1-bc77-28c3d887e24b/U2NyZWVuc2hvdCAyMDI0LTA3LTEwIGF0IDE3LjAwLjA1LnBuZw==\">"
 					},
 					"response": []
 				},
@@ -125,7 +126,8 @@
 								"auth",
 								"logout"
 							]
-						}
+						},
+						"description": "Closes the current session"
 					},
 					"response": []
 				},
@@ -143,7 +145,8 @@
 								"auth",
 								"refresh"
 							]
-						}
+						},
+						"description": "Refreshes the access token if it available."
 					},
 					"response": []
 				},
@@ -162,15 +165,16 @@
 								"verify",
 								"fe028823-40bf-490e-b6c4-35ca78b30464"
 							]
-						}
+						},
+						"description": "Verify user registration.\n\nThe verify token parameter will be found in email notification on after Register endpoint.\n\nIf you not set SMTP credentials, you can access verification token in the localhost's postgres with db banking."
 					},
 					"response": []
 				}
 			],
-			"description": "This module includes authentication APIs.\n\n  \nCheck the Register or Start Login route for log in!"
+			"description": "This module includes authentication APIs.\n\nThe project uses a passwordless architecture for authentication.\n\n- **Register:** The user sends an email to the API to get an Verification Code. The API sends a Verification Code to the user's email. The user sends the Verification Code to the API to register\n    \n- **Login:** The user sends an email to the API to get an OTP. The API sends an OTP to the user's email. The user sends the OTP to the API to get a JWT token.\n    \n\n**Register Logic:**  \nTo verify account, you must use Verify Registration endpoint.\n\n<img src=\"https://content.pstmn.io/93393260-b62b-464c-9ab0-39b817ec4d52/U2NyZWVuc2hvdCAyMDI0LTA3LTEwIGF0IDE3LjAwLjAwLnBuZw==\" alt=\"\">\n\n**Login Logic:**\n\nTo login, you must be start with Start Login endpoint and use Login endpoint for verify session.  \n\n<img src=\"https://content.pstmn.io/caef501d-3946-4de5-a6f5-14f33095dcab/U2NyZWVuc2hvdCAyMDI0LTA3LTEwIGF0IDE3LjAwLjA1LnBuZw==\" alt=\"\">"
 		},
 		{
-			"name": "accounts",
+			"name": "Accounts",
 			"item": [
 				{
 					"name": "List",
@@ -185,7 +189,8 @@
 							"path": [
 								"accounts"
 							]
-						}
+						},
+						"description": "List owned accounts on authorized user"
 					},
 					"response": []
 				},
@@ -211,7 +216,8 @@
 							"path": [
 								"accounts"
 							]
-						}
+						},
+						"description": "Create a account for authorized user"
 					},
 					"response": []
 				},
@@ -239,7 +245,8 @@
 								"18338702-f28c-4215-80e2-b16d5081694f",
 								"freeze"
 							]
-						}
+						},
+						"description": "Freeze a account"
 					},
 					"response": []
 				},
@@ -267,7 +274,8 @@
 								"18338702-f28c-4215-80e2-b16d5081694f",
 								"suspend"
 							]
-						}
+						},
+						"description": "Suspend a account"
 					},
 					"response": []
 				},
@@ -295,7 +303,8 @@
 								"18338702-f28c-4215-80e2-b16d5081694f",
 								"lock"
 							]
-						}
+						},
+						"description": "Lock a account"
 					},
 					"response": []
 				},
@@ -323,7 +332,8 @@
 								"18338702-f28c-4215-80e2-b16d5081694f",
 								"activate"
 							]
-						}
+						},
+						"description": "Activate a account"
 					},
 					"response": []
 				},
@@ -352,7 +362,8 @@
 								"balance",
 								"load"
 							]
-						}
+						},
+						"description": "Load Balance to a account"
 					},
 					"response": []
 				},
@@ -381,14 +392,16 @@
 								"balance",
 								"withdraw"
 							]
-						}
+						},
+						"description": "Withdraw Balance to a account"
 					},
 					"response": []
 				}
-			]
+			],
+			"description": "Account endpoints in this module"
 		},
 		{
-			"name": "money transfers",
+			"name": "Money Transfers",
 			"item": [
 				{
 					"name": "Money Transfer",
@@ -397,7 +410,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"account_id\": \"e9083184-6418-4d0c-9b61-8090d2f89ce7\",\n    \"amount\": \"4.50\",\n    \"to_iban\": \"TR741309513973917470666047\",\n    \"to_owner\": \"Sami Salih İbrahimbaş\",\n    \"description\": \"zekat\"\n}",
+							"raw": "{\n    \"account_id\": \"18338702-f28c-4215-80e2-b16d5081694f\",\n    \"amount\": \"4.50\",\n    \"to_iban\": \"TR298813938771869288426798\",\n    \"to_owner\": \"Sami Baş\",\n    \"description\": \"zekat\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -412,14 +425,16 @@
 							"path": [
 								"money-transfer"
 							]
-						}
+						},
+						"description": "Transfers money from the account with account_id to the account with to_iban and to_owner. If these accounts do not belong to the same person, a transaction fee is applied.\n\nThe transaction fee can be set in the .env file. The default value is 1 unit."
 					},
 					"response": []
 				}
-			]
+			],
+			"description": "Money transfer endpoints in this module"
 		},
 		{
-			"name": "transactions",
+			"name": "Transactions",
 			"item": [
 				{
 					"name": "List By Account",
@@ -427,7 +442,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{URL}}/transactions?account_id=e9083184-6418-4d0c-9b61-8090d2f89ce7",
+							"raw": "{{URL}}/transactions?account_id=18338702-f28c-4215-80e2-b16d5081694f",
 							"host": [
 								"{{URL}}"
 							],
@@ -437,14 +452,35 @@
 							"query": [
 								{
 									"key": "account_id",
-									"value": "e9083184-6418-4d0c-9b61-8090d2f89ce7"
+									"value": "18338702-f28c-4215-80e2-b16d5081694f",
+									"description": "Required"
+								},
+								{
+									"key": "start_date",
+									"value": "2024-07-09",
+									"description": "Optional",
+									"disabled": true
+								},
+								{
+									"key": "end_date",
+									"value": "2024-07-12",
+									"description": "Optional",
+									"disabled": true
+								},
+								{
+									"key": "kind",
+									"value": "deposit",
+									"description": "Optional, avilable values: deposit, transfer, withdrawal, fee",
+									"disabled": true
 								}
 							]
-						}
+						},
+						"description": "Filter by a account"
 					},
 					"response": []
 				}
-			]
+			],
+			"description": "Transaction endpoints in this module"
 		}
 	],
 	"event": [
