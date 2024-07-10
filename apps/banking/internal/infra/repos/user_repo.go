@@ -6,6 +6,7 @@ import (
 	"github.com/9ssi7/banking/internal/domain/abstracts"
 	"github.com/9ssi7/banking/internal/domain/entities"
 	"github.com/9ssi7/banking/pkg/list"
+	"github.com/9ssi7/banking/pkg/rescode"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -22,7 +23,7 @@ func NewUserRepo(db *gorm.DB) abstracts.UserRepo {
 
 func (r *userRepo) Save(ctx context.Context, user *entities.User) error {
 	if err := r.db.WithContext(ctx).Save(user).Error; err != nil {
-		return err
+		return rescode.Failed
 	}
 	return nil
 }
@@ -30,7 +31,10 @@ func (r *userRepo) Save(ctx context.Context, user *entities.User) error {
 func (r *userRepo) FindByToken(ctx context.Context, token string) (*entities.User, error) {
 	var user entities.User
 	if err := r.db.WithContext(ctx).Model(&entities.User{}).Where("temp_token = ? AND verified_at IS NULL", token).First(&user).Error; err != nil {
-		return nil, err
+		if err == gorm.ErrRecordNotFound {
+			return nil, rescode.NotFound
+		}
+		return nil, rescode.Failed
 	}
 	return &user, nil
 }
@@ -38,7 +42,7 @@ func (r *userRepo) FindByToken(ctx context.Context, token string) (*entities.Use
 func (r *userRepo) FindById(ctx context.Context, id uuid.UUID) (*entities.User, error) {
 	var user entities.User
 	if err := r.db.WithContext(ctx).Model(&entities.User{}).Where("id = ?", id).First(&user).Error; err != nil {
-		return nil, err
+		return nil, rescode.Failed
 	}
 	return &user, nil
 }
@@ -46,15 +50,23 @@ func (r *userRepo) FindById(ctx context.Context, id uuid.UUID) (*entities.User, 
 func (r *userRepo) FindByEmail(ctx context.Context, email string) (*entities.User, error) {
 	var user entities.User
 	if err := r.db.WithContext(ctx).Model(&entities.User{}).Where("email = ?", email).First(&user).Error; err != nil {
-		return nil, err
+		return nil, rescode.Failed
 	}
 	return &user, nil
+}
+
+func (r *userRepo) IsExistsByEmail(ctx context.Context, email string) (bool, error) {
+	var count int64
+	if err := r.db.WithContext(ctx).Model(&entities.User{}).Where("email = ?", email).Count(&count).Error; err != nil {
+		return false, rescode.Failed
+	}
+	return count > 0, nil
 }
 
 func (r *userRepo) FindByPhone(ctx context.Context, phone string) (*entities.User, error) {
 	var user entities.User
 	if err := r.db.WithContext(ctx).Model(&entities.User{}).Where("phone = ?", phone).First(&user).Error; err != nil {
-		return nil, err
+		return nil, rescode.Failed
 	}
 	return &user, nil
 }
@@ -64,7 +76,7 @@ func (r *userRepo) Filter(ctx context.Context, req *list.PagiRequest, search str
 	query := r.db.WithContext(ctx).Model(&entities.User{})
 	var total int64
 	if err := query.Count(&total).Error; err != nil {
-		return nil, err
+		return nil, rescode.Failed
 	}
 	if search != "" {
 		query = query.Where("name LIKE ? OR email LIKE ?", "%"+search+"%", "%"+search+"%")
@@ -74,10 +86,10 @@ func (r *userRepo) Filter(ctx context.Context, req *list.PagiRequest, search str
 	}
 	var filteredTotal int64
 	if err := query.Count(&filteredTotal).Error; err != nil {
-		return nil, err
+		return nil, rescode.Failed
 	}
 	if err := query.Limit(*req.Limit).Offset(req.Offset()).Find(&users).Error; err != nil {
-		return nil, err
+		return nil, rescode.Failed
 	}
 	return &list.PagiResponse[*entities.User]{
 		List:          users,

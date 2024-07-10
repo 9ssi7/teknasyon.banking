@@ -16,6 +16,12 @@ var (
 		HttpStatus:    http.StatusForbidden,
 		Translateable: true,
 	})
+	EmailAlreadyExists = New(codeEmailAlreadyExists, msgEmailAlreadyExists, map[string]interface{}{
+		"isExists": true,
+	}, Extra{
+		HttpStatus:    http.StatusConflict,
+		Translateable: true,
+	})
 	VerificationExpired = New(codeVerificationExpired, msgVerificationExpired, map[string]interface{}{
 		"isExpired": true,
 	}, Extra{

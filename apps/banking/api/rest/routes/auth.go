@@ -10,12 +10,15 @@ import (
 )
 
 func Auth(router fiber.Router, srv restsrv.Srv, app app.App) {
-	router.Post("/auth/start", srv.VerifyTokenExcluded(), srv.Timeout(authStart(srv, app)))
-	router.Post("/auth/login", srv.AccessInit(), srv.AccessExcluded(), srv.VerifyTokenRequired(), srv.Timeout(authLogin(srv, app)))
-	router.Post("/auth/logout", srv.AccessInit(true), srv.AccessRequired(true), srv.Timeout(authLogout(app)))
-	router.Put("/auth/refresh", srv.RefreshInit(), srv.RefreshRequired(), srv.Timeout(authRefresh(app)))
-	router.Get("/auth/check", srv.AccessInit(), srv.AccessExcluded(), srv.Timeout(authCheck(app)))
-	router.Get("/auth", srv.AccessInit(), srv.AccessRequired(), srv.Timeout(authCurrent(app)))
+	group := router.Group("/auth")
+	group.Post("/start", srv.VerifyTokenExcluded(), srv.Timeout(authStart(srv, app)))
+	group.Post("/login", srv.AccessInit(), srv.AccessExcluded(), srv.VerifyTokenRequired(), srv.Timeout(authLogin(srv, app)))
+	group.Post("/register", srv.AccessInit(), srv.AccessExcluded(), srv.Turnstile(), srv.Timeout(authRegister(app)))
+	group.Post("/logout", srv.AccessInit(true), srv.AccessRequired(true), srv.Timeout(authLogout(app)))
+	group.Put("/refresh", srv.RefreshInit(), srv.RefreshRequired(), srv.Timeout(authRefresh(app)))
+	group.Get("/verify/:token", srv.AccessInit(), srv.AccessExcluded(), srv.Turnstile(), srv.Timeout(authVerify(app)))
+	group.Get("/check", srv.AccessInit(), srv.AccessExcluded(), srv.Timeout(authCheck(app)))
+	group.Get("/", srv.AccessInit(), srv.AccessRequired(), srv.Timeout(authCurrent(app)))
 }
 
 func authLogin(srv restsrv.Srv, app app.App) fiber.Handler {
@@ -33,6 +36,34 @@ func authLogin(srv restsrv.Srv, app app.App) fiber.Handler {
 		middlewares.VerifyTokenRemove(c)
 		middlewares.AccessTokenSetCookie(c, res.AccessToken)
 		middlewares.RefreshTokenSetCookie(c, res.RefreshToken)
+		return c.Status(fiber.StatusOK).JSON(res)
+	}
+}
+
+func authRegister(app app.App) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		var cmd commands.AuthRegister
+		if err := c.BodyParser(&cmd); err != nil {
+			return err
+		}
+		res, err := app.Commands.AuthRegister(c.UserContext(), cmd)
+		if err != nil {
+			return err
+		}
+		return c.Status(fiber.StatusOK).JSON(res)
+	}
+}
+
+func authVerify(app app.App) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		var cmd commands.AuthVerify
+		if err := c.ParamsParser(&cmd); err != nil {
+			return err
+		}
+		res, err := app.Commands.AuthVerify(c.UserContext(), cmd)
+		if err != nil {
+			return err
+		}
 		return c.Status(fiber.StatusOK).JSON(res)
 	}
 }

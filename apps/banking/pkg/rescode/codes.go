@@ -7,6 +7,7 @@ const (
 
 	codeUserDisabled       uint64 = 2000
 	codeUserVerifyRequired uint64 = 2001
+	codeEmailAlreadyExists uint64 = 2002
 
 	codeVerificationExpired          uint64 = 3000
 	codeVerificationExceeded         uint64 = 3001
