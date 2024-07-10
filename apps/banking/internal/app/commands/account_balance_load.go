@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/9ssi7/banking/internal/domain/abstracts"
+	"github.com/9ssi7/banking/internal/domain/entities"
+	"github.com/9ssi7/banking/internal/domain/valobj"
 	"github.com/9ssi7/banking/pkg/cqrs"
 	"github.com/9ssi7/banking/pkg/rescode"
 	"github.com/9ssi7/banking/pkg/validation"
@@ -19,7 +21,7 @@ type AccountBalanceLoad struct {
 
 type AccountBalanceLoadHandler cqrs.HandlerFunc[AccountBalanceLoad, *cqrs.Empty]
 
-func NewAccountBalanceLoadHandler(v validation.Service, accountRepo abstracts.AccountRepo) AccountBalanceLoadHandler {
+func NewAccountBalanceLoadHandler(v validation.Service, accountRepo abstracts.AccountRepo, transactionRepo abstracts.TransactionRepo) AccountBalanceLoadHandler {
 	return func(ctx context.Context, cmd AccountBalanceLoad) (*cqrs.Empty, error) {
 		if err := v.ValidateStruct(ctx, cmd); err != nil {
 			return nil, err
@@ -37,6 +39,10 @@ func NewAccountBalanceLoadHandler(v validation.Service, accountRepo abstracts.Ac
 		}
 		account.AddBalance(amount)
 		if err := accountRepo.Save(ctx, account); err != nil {
+			return nil, err
+		}
+		t := entities.NewTransaction(account.Id, account.Id, amount, "Load balance", valobj.TransactionKindDeposit)
+		if err := transactionRepo.Save(ctx, t); err != nil {
 			return nil, err
 		}
 		return &cqrs.Empty{}, nil

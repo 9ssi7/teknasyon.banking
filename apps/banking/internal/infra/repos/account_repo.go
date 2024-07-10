@@ -73,3 +73,14 @@ func (r *accountRepo) FindByUserIdAndId(ctx context.Context, userId uuid.UUID, i
 	}
 	return &account, nil
 }
+
+func (r *accountRepo) FindById(ctx context.Context, id uuid.UUID) (*entities.Account, error) {
+	var account entities.Account
+	if err := r.db.WithContext(ctx).Model(&entities.Account{}).Where("id = ?", id).First(&account).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, rescode.NotFound
+		}
+		return nil, rescode.Failed
+	}
+	return &account, nil
+}

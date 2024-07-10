@@ -5,6 +5,7 @@ import (
 
 	"github.com/9ssi7/banking/internal/domain/aggregates"
 	"github.com/9ssi7/banking/internal/domain/entities"
+	"github.com/9ssi7/banking/internal/domain/valobj"
 	"github.com/9ssi7/banking/pkg/list"
 	"github.com/google/uuid"
 )
@@ -24,6 +25,12 @@ type AccountRepo interface {
 	ListByUserId(ctx context.Context, userId uuid.UUID, pagi *list.PagiRequest) (*list.PagiResponse[*entities.Account], error)
 	FindByIbanAndOwner(ctx context.Context, iban string, owner string) (*entities.Account, error)
 	FindByUserIdAndId(ctx context.Context, userId uuid.UUID, id uuid.UUID) (*entities.Account, error)
+	FindById(ctx context.Context, id uuid.UUID) (*entities.Account, error)
+}
+
+type TransactionRepo interface {
+	Save(ctx context.Context, transaction *entities.Transaction) error
+	Filter(ctx context.Context, accountId uuid.UUID, pagi *list.PagiRequest, filters *valobj.TransactionFilters) (*list.PagiResponse[*entities.Transaction], error)
 }
 
 type SessionRepo interface {
@@ -41,8 +48,9 @@ type VerifyRepo interface {
 }
 
 type Repositories struct {
-	VerifyRepo  VerifyRepo
-	SessionRepo SessionRepo
-	UserRepo    UserRepo
-	AccountRepo AccountRepo
+	VerifyRepo      VerifyRepo
+	SessionRepo     SessionRepo
+	UserRepo        UserRepo
+	AccountRepo     AccountRepo
+	TransactionRepo TransactionRepo
 }

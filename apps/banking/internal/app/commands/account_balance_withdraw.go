@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/9ssi7/banking/internal/domain/abstracts"
+	"github.com/9ssi7/banking/internal/domain/entities"
+	"github.com/9ssi7/banking/internal/domain/valobj"
 	"github.com/9ssi7/banking/pkg/cqrs"
 	"github.com/9ssi7/banking/pkg/rescode"
 	"github.com/9ssi7/banking/pkg/validation"
@@ -19,7 +21,7 @@ type AccountBalanceWithdraw struct {
 
 type AccountBalanceWithdrawHandler cqrs.HandlerFunc[AccountBalanceWithdraw, *cqrs.Empty]
 
-func NewAccountBalanceWithdrawHandler(v validation.Service, accountRepo abstracts.AccountRepo) AccountBalanceWithdrawHandler {
+func NewAccountBalanceWithdrawHandler(v validation.Service, accountRepo abstracts.AccountRepo, transactionRepo abstracts.TransactionRepo) AccountBalanceWithdrawHandler {
 	return func(ctx context.Context, cmd AccountBalanceWithdraw) (*cqrs.Empty, error) {
 		if err := v.ValidateStruct(ctx, cmd); err != nil {
 			return nil, err
@@ -40,6 +42,10 @@ func NewAccountBalanceWithdrawHandler(v validation.Service, accountRepo abstract
 		}
 		account.SubBalance(amount)
 		if err := accountRepo.Save(ctx, account); err != nil {
+			return nil, err
+		}
+		t := entities.NewTransaction(account.Id, account.Id, amount, "Withdraw balance", valobj.TransactionKindWithdrawal)
+		if err := transactionRepo.Save(ctx, t); err != nil {
 			return nil, err
 		}
 		return &cqrs.Empty{}, nil

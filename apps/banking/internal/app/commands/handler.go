@@ -36,7 +36,7 @@ func NewHandler(r abstracts.Repositories, v validation.Service) Handlers {
 		AccountFreeze:          NewAccountFreezeHandler(v, r.AccountRepo),
 		AccountLock:            NewAccountLockHandler(v, r.AccountRepo),
 		AccountSuspend:         NewAccountSuspendHandler(v, r.AccountRepo),
-		AccountBalanceLoad:     NewAccountBalanceLoadHandler(v, r.AccountRepo),
-		AccountBalanceWithdraw: NewAccountBalanceWithdrawHandler(v, r.AccountRepo),
+		AccountBalanceLoad:     NewAccountBalanceLoadHandler(v, r.AccountRepo, r.TransactionRepo),
+		AccountBalanceWithdraw: NewAccountBalanceWithdrawHandler(v, r.AccountRepo, r.TransactionRepo),
 	}
 }

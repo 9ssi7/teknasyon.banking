@@ -31,17 +31,18 @@ func main() {
 	}
 
 	r := abstracts.Repositories{
-		UserRepo:    repos.NewUserRepo(db),
-		AccountRepo: repos.NewAccountRepo(db),
-		SessionRepo: repos.NewSessionRepo(kvdb),
-		VerifyRepo:  repos.NewVerifyRepo(kvdb),
+		UserRepo:        repos.NewUserRepo(db),
+		AccountRepo:     repos.NewAccountRepo(db),
+		TransactionRepo: repos.NewTransactionRepo(db),
+		SessionRepo:     repos.NewSessionRepo(kvdb),
+		VerifyRepo:      repos.NewVerifyRepo(kvdb),
 	}
 
 	v := validation.New()
 
 	rest.New(app.App{
 		Commands: commands.NewHandler(r, v),
-		Queries:  queries.NewHandler(r),
+		Queries:  queries.NewHandler(r, v),
 		Services: services.NewHandler(),
 	}).Listen()
 }
