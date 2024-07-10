@@ -24,7 +24,9 @@ const (
 	msgRecaptchaFailed   string = "recaptcha_failed"
 	msgRecaptchaRequired string = "recaptcha_required"
 
-	msgAccountBalanceInsufficient string = "account_balance_insufficient"
-	msgAccountNotAvailable        string = "account_not_available"
-	msgAccountNotFound            string = "account_not_found"
+	msgAccountBalanceInsufficient   string = "account_balance_insufficient"
+	msgAccountNotAvailable          string = "account_not_available"
+	msgToAccountNotAvailable        string = "to_account_not_available"
+	msgAccountNotFound              string = "account_not_found"
+	msgAccountTransferToSameAccount string = "account_transfer_to_same_account"
 )

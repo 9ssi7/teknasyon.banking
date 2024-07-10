@@ -37,6 +37,15 @@ func NewMoneyTransferHandler(v validation.Service, accountRepo abstracts.Account
 		if err != nil {
 			return nil, err
 		}
+		if !account.IsAvailable() {
+			return nil, rescode.AccountNotAvailable
+		}
+		if !toAccount.IsAvailable() {
+			return nil, rescode.ToAccountNotAvailable
+		}
+		if account.Id == toAccount.Id {
+			return nil, rescode.AccountTransferToSameAccount
+		}
 		amount, err := decimal.NewFromString(cmd.Amount)
 		if err != nil {
 			return nil, err

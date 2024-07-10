@@ -17,7 +17,6 @@ require (
 	github.com/shopspring/decimal v1.4.0
 	github.com/xhit/go-simple-mail/v2 v2.16.0
 	go.deanishe.net/env v0.5.1
-	google.golang.org/genproto v0.0.0-20240709173604-40e1e62336c5
 	gorm.io/driver/postgres v1.5.9
 	gorm.io/gorm v1.25.10
 )
@@ -32,7 +31,6 @@ require (
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/pgx/v5 v5.5.5 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
-	github.com/jbub/banking v0.8.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/klauspost/compress v1.17.0 // indirect
@@ -42,6 +40,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
+	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/tinylib/msgp v1.1.8 // indirect
 	github.com/toorop/go-dkim v0.0.0-20201103131630-e1cd1a0a5208 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
@@ -52,5 +51,4 @@ require (
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.21.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
-	google.golang.org/protobuf v1.34.2 // indirect
 )

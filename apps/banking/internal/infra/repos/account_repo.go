@@ -30,7 +30,7 @@ func (r *accountRepo) Save(ctx context.Context, account *entities.Account) error
 
 func (r *accountRepo) ListByUserId(ctx context.Context, userId uuid.UUID, pagi *list.PagiRequest) (*list.PagiResponse[*entities.Account], error) {
 	var accounts []*entities.Account
-	query := r.db.WithContext(ctx).Model(&entities.Account{})
+	query := r.db.WithContext(ctx).Model(&entities.Account{}).Where("user_id = ?", userId)
 	var total int64
 	if err := query.Count(&total).Error; err != nil {
 		return nil, rescode.Failed

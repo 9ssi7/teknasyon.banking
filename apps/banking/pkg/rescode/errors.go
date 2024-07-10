@@ -91,8 +91,16 @@ var (
 		HttpStatus:    http.StatusBadRequest,
 		Translateable: true,
 	})
+	ToAccountNotAvailable = New(codeToAccountNotAvailable, msgToAccountNotAvailable, nil, Extra{
+		HttpStatus:    http.StatusBadRequest,
+		Translateable: true,
+	})
 	AccountNotFound = New(codeAccountNotFound, msgAccountNotFound, nil, Extra{
 		HttpStatus:    http.StatusNotFound,
+		Translateable: true,
+	})
+	AccountTransferToSameAccount = New(codeAccountTransferToSameAccount, msgAccountTransferToSameAccount, nil, Extra{
+		HttpStatus:    http.StatusBadRequest,
 		Translateable: true,
 	})
 )

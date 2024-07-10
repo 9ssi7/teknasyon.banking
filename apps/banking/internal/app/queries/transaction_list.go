@@ -13,6 +13,7 @@ import (
 )
 
 type TransactionList struct {
+	UserId    uuid.UUID `validate:"-"`
 	AccountId uuid.UUID `query:"account_id" validate:"required,uuid"`
 	Pagi      list.PagiRequest
 	Filters   valobj.TransactionFilters
@@ -25,7 +26,7 @@ func NewTransactionListHandler(v validation.Service, transactionRepo abstracts.T
 		if err := v.ValidateStruct(ctx, query); err != nil {
 			return nil, err
 		}
-		_, err := accountRepo.FindById(ctx, query.AccountId)
+		_, err := accountRepo.FindByUserIdAndId(ctx, query.UserId, query.AccountId)
 		if err != nil {
 			return nil, err
 		}

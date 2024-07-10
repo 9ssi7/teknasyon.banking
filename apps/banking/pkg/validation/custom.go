@@ -5,9 +5,9 @@ import (
 	"regexp"
 
 	"github.com/9ssi7/banking/pkg/currency"
+	"github.com/9ssi7/banking/pkg/iban"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
-	"github.com/jbub/banking/iban"
 	"github.com/shopspring/decimal"
 )
 
@@ -22,7 +22,7 @@ func validateUUID(field reflect.Value) interface{} {
 }
 
 func validateIban(fl validator.FieldLevel) bool {
-	return iban.Validate(fl.Field().String()) == nil
+	return iban.Validate(fl.Field().String())
 }
 
 func validateAmount(fl validator.FieldLevel) bool {

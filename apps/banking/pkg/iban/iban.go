@@ -11,6 +11,27 @@ func New() string {
 	return generateIBAN("tr") // add i18n support
 }
 
+func Validate(iban string) bool {
+	return validateIBAN(iban)
+}
+
+func validateIBAN(iban string) bool {
+	if len(iban) != 26 && len(iban) != 27 {
+		return false
+	}
+	for _, char := range iban[:2] {
+		if char < 'A' || char > 'Z' {
+			return false
+		}
+	}
+	for _, char := range iban[2:] {
+		if char < '0' || char > '9' {
+			return false
+		}
+	}
+	return true
+}
+
 func generateIBAN(countryCode string) string {
 	rand.New(rand.NewSource(time.Now().UnixNano()))
 	var ibanFormat string
