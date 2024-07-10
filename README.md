@@ -85,9 +85,9 @@ This command will start the project with the following services:
 - **JWT**: The JWT service that generates and verifies the JWT tokens.
 - **Environment**: The environment service that loads the environment variables.
 
-You can access the API documentation from the postman collection file in the `docs` folder.
-
 ## Usage
+
+You can access postman collection from the following link: [Postman Collection](./docs/banking.postman_collection.json)
 
 You can use the following commands to manage the project:
 
