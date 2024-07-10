@@ -61,7 +61,20 @@ docker swarm init
 Then, you will be able to start the project with the one following command:
 
 ```bash
-make start
+make burn
+```
+
+Or, you can start the project with the following commands:
+
+```bash
+make temp
+make jwt
+make env
+make network
+make compose
+make secret-register
+make build-app
+make start-app
 ```
 
 This command will start the project with the following services:
@@ -78,7 +91,9 @@ You can access the API documentation from the postman collection file in the `do
 
 You can use the following commands to manage the project:
 
-- **Start the project**: `make start`
+- **Burn the project**: `make burn`
+
+Burn is enough to start the project. However, you can use the following commands to manage the project:
 - **Stop the project**: `make stop`
 - **Environment Variables**: `make env`
 - **JWT Secrets**: `make jwt`
@@ -86,7 +101,9 @@ You can use the following commands to manage the project:
 - **Register JWT to Docker Secrets**: `make secret-register`
 - **Restart the project**: `make reload`
 - **Generate Requirements**: `make reqs`
-- **Clean the project**: `make clean`,
+- **Remove All Docker Assets**: `make clean-docker`
+- **Remove All Assets**: `make clean-all`
+- **Clean the project**: `make clean`
 
 ### SMTP Credentials
 
@@ -99,6 +116,12 @@ The project uses SMTP for sending emails. You can set the SMTP credentials in th
 - `SMTP_PASSWORD`: The SMTP password
 
 If you in the Teknasyon Team, contact me for testing credentials.
+
+After updating the `.env` file, you should run the following command:
+
+```bash
+make reload
+```
 
 ### Authentication
 

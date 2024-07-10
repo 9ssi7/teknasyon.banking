@@ -11,6 +11,7 @@ type AccountListDto struct {
 	Id       uuid.UUID         `json:"id"`
 	Name     string            `json:"name"`
 	Owner    string            `json:"owner"`
+	Iban     string            `json:"iban"`
 	Currency currency.Currency `json:"currency"`
 	Balance  string            `json:"balance"`
 	Status   string            `json:"status"`
@@ -23,6 +24,7 @@ func MapAccountList(res *list.PagiResponse[*entities.Account]) *list.PagiRespons
 			Id:       item.Id,
 			Name:     item.Name,
 			Owner:    item.Owner,
+			Iban:     item.Iban,
 			Currency: item.Currency,
 			Balance:  item.Balance.String(),
 			Status:   item.Status.String(),

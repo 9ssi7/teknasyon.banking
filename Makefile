@@ -39,12 +39,21 @@ clean:
 	rm -rf config/banking_jwtRS256.key
 	rm -rf config/banking_jwtRS256.key.pub
 
+clean-docker:
+	docker service rm 9ssi7banking
+	docker secret rm banking_private_key
+	docker secret rm banking_public_key
+	docker network rm banking
+	docker rmi github.com/9ssi7/banking:latest
+
+clean-all: clean clean-docker
+
 reqs: temp jwt-key jwt-pub env network compose secret-register
 
-start: temp jwt-key jwt-pub env network compose secret-register build-app start-app
+burn: temp jwt-key jwt-pub env network compose secret-register build-app start-app
 
 stop: compose-down stop-app clean
 
 reload: stop-app build-app start-app
 
-.PHONY: jwt-key jwt-pub jwt temp compose compose-down build-app secret-register network start-app stop-app clean start stop
+.PHONY: jwt-key jwt-pub jwt temp compose compose-down build-app secret-register network start-app stop-app clean start stop burn
