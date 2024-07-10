@@ -30,7 +30,7 @@ type AccountRepo interface {
 
 type TransactionRepo interface {
 	Save(ctx context.Context, transaction *entities.Transaction) error
-	Filter(ctx context.Context, pagi *list.PagiRequest, filters *valobj.TransactionFilters) (*list.PagiResponse[*entities.Transaction], error)
+	Filter(ctx context.Context, accountId uuid.UUID, pagi *list.PagiRequest, filters *valobj.TransactionFilters) (*list.PagiResponse[*entities.Transaction], error)
 }
 
 type SessionRepo interface {

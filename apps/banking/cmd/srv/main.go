@@ -42,7 +42,7 @@ func main() {
 
 	rest.New(app.App{
 		Commands: commands.NewHandler(r, v),
-		Queries:  queries.NewHandler(r),
+		Queries:  queries.NewHandler(r, v),
 		Services: services.NewHandler(),
 	}).Listen()
 }

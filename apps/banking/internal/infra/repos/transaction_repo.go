@@ -8,6 +8,7 @@ import (
 	"github.com/9ssi7/banking/internal/domain/valobj"
 	"github.com/9ssi7/banking/pkg/list"
 	"github.com/9ssi7/banking/pkg/rescode"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -28,9 +29,9 @@ func (r *transactionRepo) Save(ctx context.Context, transaction *entities.Transa
 	return nil
 }
 
-func (r *transactionRepo) Filter(ctx context.Context, pagi *list.PagiRequest, filters *valobj.TransactionFilters) (*list.PagiResponse[*entities.Transaction], error) {
+func (r *transactionRepo) Filter(ctx context.Context, accountId uuid.UUID, pagi *list.PagiRequest, filters *valobj.TransactionFilters) (*list.PagiResponse[*entities.Transaction], error) {
 	var transactions []*entities.Transaction
-	query := r.db.WithContext(ctx).Model(&entities.Transaction{})
+	query := r.db.WithContext(ctx).Model(&entities.Transaction{}).Where("sender_id = ? OR receiver_id = ?", accountId, accountId)
 	var total int64
 	if err := query.Count(&total).Error; err != nil {
 		return nil, rescode.Failed
