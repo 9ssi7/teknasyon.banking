@@ -73,7 +73,9 @@ func (s *srv) SendText(cnf SendConfig) error {
 	email.AddTo(cnf.To...)
 	email.SetSubject(cnf.Subject)
 	email.SetSender(s.cnf.Sender)
-	email.SetReplyTo(s.cnf.Reply)
+	if s.cnf.Reply != "" {
+		email.SetReplyTo(s.cnf.Reply)
+	}
 	email.AddAlternative(smtp_mail.TextPlain, cnf.Message)
 	err = email.Send(client)
 	if err != nil {

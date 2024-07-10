@@ -31,13 +31,15 @@ func NewAuthRegisterHandler(v validation.Service, userRepo abstracts.UserRepo) A
 		if exists {
 			return nil, rescode.EmailAlreadyExists
 		}
-		err = userRepo.Save(ctx, entities.NewUser(cmd.Name, cmd.Email))
+		u := entities.NewUser(cmd.Name, cmd.Email)
+		err = userRepo.Save(ctx, u)
 		if err != nil {
 			return nil, err
 		}
 		events.OnAuthRegistered(events.AuthRegistered{
-			Name:  cmd.Name,
-			Email: cmd.Email,
+			Name:             cmd.Name,
+			Email:            cmd.Email,
+			VerificationCode: *u.TempToken,
 		})
 		return &cqrs.Empty{}, nil
 	}
