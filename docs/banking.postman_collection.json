@@ -1,0 +1,479 @@
+{
+	"info": {
+		"_postman_id": "dd6af7c9-fba2-4a93-9856-19c9a5c9e848",
+		"name": "Teknasyon Banking",
+		"description": "9ssi7's go case api for Teknasyon.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36796277"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Current User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/auth",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"<replace-with-your-name>\",\n    \"email\": \"<replace-with-your-email>\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/auth/register",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						},
+						"description": "Starts the registration flow\n\n<img src=\"https://content.pstmn.io/3760fec8-c33e-4fbc-858e-7aab157ade57/U2NyZWVuc2hvdCAyMDI0LTA3LTEwIGF0IDE3LjAwLjAwLnBuZw==\" alt=\"\">"
+					},
+					"response": []
+				},
+				{
+					"name": "Start Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"<replace-with-your-email>\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/auth/start",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"start"
+							]
+						},
+						"description": "Starts the login flow.\n\n<img src=\"https://content.pstmn.io/ef2293e6-9142-49e5-98e4-adac4afbf92e/U2NyZWVuc2hvdCAyMDI0LTA3LTEwIGF0IDE3LjAwLjA1LnBuZw==\" alt=\"\">"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\": \"5889\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/auth/login",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Completes the login flow\n\n<img src=\"https://content.pstmn.io/d60e7526-4a13-46e1-bc77-28c3d887e24b/U2NyZWVuc2hvdCAyMDI0LTA3LTEwIGF0IDE3LjAwLjA1LnBuZw==\" alt=\"\">"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/auth/logout",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/auth/refresh",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Registration",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/auth/verify/fe028823-40bf-490e-b6c4-35ca78b30464",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"verify",
+								"fe028823-40bf-490e-b6c4-35ca78b30464"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "This module includes authentication APIs.\n\n  \nCheck the Register or Start Login route for log in!"
+		},
+		{
+			"name": "accounts",
+			"item": [
+				{
+					"name": "List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/accounts",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Sapanca Account Sami\",\n    \"owner\": \"Sami Baş\",\n    \"currency\": \"TRY\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/accounts",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Freeze",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Sapanca Account\",\n    \"owner\": \"Sami Salih İbrahimbaş\",\n    \"currency\": \"TRY\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/accounts/18338702-f28c-4215-80e2-b16d5081694f/freeze",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"accounts",
+								"18338702-f28c-4215-80e2-b16d5081694f",
+								"freeze"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Suspend",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Sapanca Account\",\n    \"owner\": \"Sami Salih İbrahimbaş\",\n    \"currency\": \"TRY\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/accounts/18338702-f28c-4215-80e2-b16d5081694f/suspend",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"accounts",
+								"18338702-f28c-4215-80e2-b16d5081694f",
+								"suspend"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lock",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Sapanca Account\",\n    \"owner\": \"Sami Salih İbrahimbaş\",\n    \"currency\": \"TRY\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/accounts/18338702-f28c-4215-80e2-b16d5081694f/lock",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"accounts",
+								"18338702-f28c-4215-80e2-b16d5081694f",
+								"lock"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Activate",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Sapanca Account\",\n    \"owner\": \"Sami Salih İbrahimbaş\",\n    \"currency\": \"TRY\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/accounts/18338702-f28c-4215-80e2-b16d5081694f/activate",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"accounts",
+								"18338702-f28c-4215-80e2-b16d5081694f",
+								"activate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Load Balance",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": \"50\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/accounts/18338702-f28c-4215-80e2-b16d5081694f/balance/load",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"accounts",
+								"18338702-f28c-4215-80e2-b16d5081694f",
+								"balance",
+								"load"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Withdraw Balance",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": \"49.93\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/accounts/18338702-f28c-4215-80e2-b16d5081694f/balance/withdraw",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"accounts",
+								"18338702-f28c-4215-80e2-b16d5081694f",
+								"balance",
+								"withdraw"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "money transfers",
+			"item": [
+				{
+					"name": "Money Transfer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"account_id\": \"e9083184-6418-4d0c-9b61-8090d2f89ce7\",\n    \"amount\": \"4.50\",\n    \"to_iban\": \"TR741309513973917470666047\",\n    \"to_owner\": \"Sami Salih İbrahimbaş\",\n    \"description\": \"zekat\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/money-transfer",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"money-transfer"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "transactions",
+			"item": [
+				{
+					"name": "List By Account",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/transactions?account_id=e9083184-6418-4d0c-9b61-8090d2f89ce7",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "account_id",
+									"value": "e9083184-6418-4d0c-9b61-8090d2f89ce7"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "URL",
+			"value": "http://localhost:4000",
+			"type": "string"
+		}
+	]
+}
