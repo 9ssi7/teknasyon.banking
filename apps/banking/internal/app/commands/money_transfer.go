@@ -5,6 +5,7 @@ import (
 
 	"github.com/9ssi7/banking/internal/domain/abstracts"
 	"github.com/9ssi7/banking/internal/domain/entities"
+	"github.com/9ssi7/banking/internal/domain/events"
 	"github.com/9ssi7/banking/internal/domain/valobj"
 	"github.com/9ssi7/banking/pkg/cqrs"
 	"github.com/9ssi7/banking/pkg/rescode"
@@ -15,6 +16,8 @@ import (
 
 type MoneyTranfer struct {
 	UserId      uuid.UUID `validate:"-"`
+	UserEmail   string    `validate:"-"`
+	UserName    string    `json:"user_name" validate:"-"`
 	AccountId   uuid.UUID `json:"account_id" validate:"required,uuid"`
 	Amount      string    `json:"amount" validate:"required,amount"`
 	ToIban      string    `json:"to_iban" validate:"required,iban"`
@@ -24,7 +27,7 @@ type MoneyTranfer struct {
 
 type MoneyTransferHandler cqrs.HandlerFunc[MoneyTranfer, *cqrs.Empty]
 
-func NewMoneyTransferHandler(v validation.Service, accountRepo abstracts.AccountRepo, transactionRepo abstracts.TransactionRepo) MoneyTransferHandler {
+func NewMoneyTransferHandler(v validation.Service, userRepo abstracts.UserRepo, accountRepo abstracts.AccountRepo, transactionRepo abstracts.TransactionRepo) MoneyTransferHandler {
 	return func(ctx context.Context, cmd MoneyTranfer) (*cqrs.Empty, error) {
 		if err := v.ValidateStruct(ctx, cmd); err != nil {
 			return nil, err
@@ -45,6 +48,9 @@ func NewMoneyTransferHandler(v validation.Service, accountRepo abstracts.Account
 		}
 		if account.Id == toAccount.Id {
 			return nil, rescode.AccountTransferToSameAccount
+		}
+		if account.Currency != toAccount.Currency {
+			return nil, rescode.AccountCurrencyMismatch
 		}
 		amount, err := decimal.NewFromString(cmd.Amount)
 		if err != nil {
@@ -68,6 +74,28 @@ func NewMoneyTransferHandler(v validation.Service, accountRepo abstracts.Account
 			return nil, err
 		}
 
+		if toAccount.UserId != account.UserId {
+			toUser, err := userRepo.FindById(ctx, toAccount.UserId)
+			if err != nil {
+				return nil, rescode.Failed
+			}
+			events.OnTransferIncoming(events.TranfserIncoming{
+				Email:       toUser.Email,
+				Name:        toUser.Name,
+				Amount:      amount.String(),
+				Currency:    toAccount.Currency.String(),
+				Account:     toAccount.Name,
+				Description: cmd.Description,
+			})
+			events.OnTransferOutgoing(events.TranfserOutgoing{
+				Amount:      amount.String(),
+				Email:       cmd.UserEmail,
+				Name:        cmd.UserName,
+				Currency:    account.Currency.String(),
+				Account:     account.Name,
+				Description: cmd.Description,
+			})
+		}
 		return &cqrs.Empty{}, nil
 	}
 }

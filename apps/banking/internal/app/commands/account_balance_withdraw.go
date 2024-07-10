@@ -5,6 +5,7 @@ import (
 
 	"github.com/9ssi7/banking/internal/domain/abstracts"
 	"github.com/9ssi7/banking/internal/domain/entities"
+	"github.com/9ssi7/banking/internal/domain/events"
 	"github.com/9ssi7/banking/internal/domain/valobj"
 	"github.com/9ssi7/banking/pkg/cqrs"
 	"github.com/9ssi7/banking/pkg/rescode"
@@ -15,6 +16,8 @@ import (
 
 type AccountBalanceWithdraw struct {
 	UserId    uuid.UUID `json:"user_id" validate:"-"`
+	UserEmail string    `json:"user_email" validate:"-"`
+	UserName  string    `json:"user_name" validate:"-"`
 	AccountId uuid.UUID `json:"account_id"  params:"account_id" validate:"required,uuid"`
 	Amount    string    `json:"amount" validate:"required,amount"`
 }
@@ -48,6 +51,14 @@ func NewAccountBalanceWithdrawHandler(v validation.Service, accountRepo abstract
 		if err := transactionRepo.Save(ctx, t); err != nil {
 			return nil, err
 		}
+		events.OnTransferOutgoing(events.TranfserOutgoing{
+			Name:        cmd.UserName,
+			Amount:      amount.String(),
+			Email:       cmd.UserEmail,
+			Currency:    account.Currency.String(),
+			Account:     account.Name,
+			Description: "Withdraw balance",
+		})
 		return &cqrs.Empty{}, nil
 	}
 }

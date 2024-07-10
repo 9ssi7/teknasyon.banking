@@ -5,6 +5,7 @@ import (
 
 	"github.com/9ssi7/banking/internal/domain/abstracts"
 	"github.com/9ssi7/banking/internal/domain/entities"
+	"github.com/9ssi7/banking/internal/domain/events"
 	"github.com/9ssi7/banking/internal/domain/valobj"
 	"github.com/9ssi7/banking/pkg/cqrs"
 	"github.com/9ssi7/banking/pkg/rescode"
@@ -15,6 +16,8 @@ import (
 
 type AccountBalanceLoad struct {
 	UserId    uuid.UUID `json:"user_id" validate:"-"`
+	UserEmail string    `json:"user_email" validate:"-"`
+	UserName  string    `json:"user_name" validate:"-"`
 	AccountId uuid.UUID `json:"account_id"  params:"account_id" validate:"required,uuid"`
 	Amount    string    `json:"amount" validate:"required,amount"`
 }
@@ -45,6 +48,14 @@ func NewAccountBalanceLoadHandler(v validation.Service, accountRepo abstracts.Ac
 		if err := transactionRepo.Save(ctx, t); err != nil {
 			return nil, err
 		}
+		events.OnTransferIncoming(events.TranfserIncoming{
+			Name:        cmd.UserName,
+			Amount:      amount.String(),
+			Currency:    account.Currency.String(),
+			Email:       cmd.UserEmail,
+			Account:     account.Name,
+			Description: "Load balance",
+		})
 		return &cqrs.Empty{}, nil
 	}
 }

@@ -18,7 +18,7 @@ func OnAuthStarted(e AuthStarted) {
 		mail.GetClient().SendWithTemplate(mail.SendWithTemplateConfig{
 			SendConfig: mail.SendConfig{
 				To:      []string{e.Email},
-				Subject: messages.AuthVerifyEmailSubject,
+				Subject: messages.AuthEmailSubjectVerify,
 				Message: e.Code,
 			},
 			Template: assets.Templates.AuthVerify,
