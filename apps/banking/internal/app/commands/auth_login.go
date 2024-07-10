@@ -62,7 +62,6 @@ func NewAuthLoginHandler(v validation.Service, userRepo abstracts.UserRepo, veri
 			Id:    user.Id,
 			Name:  user.Name,
 			Email: user.Email,
-			Phone: user.Phone,
 			Roles: user.Roles,
 		})
 		if err != nil {

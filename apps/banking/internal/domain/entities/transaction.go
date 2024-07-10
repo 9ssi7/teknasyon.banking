@@ -8,11 +8,11 @@ import (
 
 type Transaction struct {
 	Base
-	SenderId    uuid.UUID              `json:"sender_id" gorm:"type:uuid;not null"`
-	ReceiverId  uuid.UUID              `json:"receiver_id" gorm:"type:uuid;not null"`
+	SenderId    uuid.UUID              `json:"sender_id" gorm:"type:uuid;not null;index:mt_trx_s_or_r"`
+	ReceiverId  uuid.UUID              `json:"receiver_id" gorm:"type:uuid;not null;index:mt_trx_s_or_r"`
 	Amount      decimal.Decimal        `json:"amount" gorm:"type:decimal;not null"`
 	Description string                 `json:"description" gorm:"type:varchar(255);not null"`
-	Kind        valobj.TransactionKind `json:"kind" gorm:"type:varchar(255);not null"`
+	Kind        valobj.TransactionKind `json:"kind" gorm:"type:varchar(255);not null;index:mt_trx_kind"`
 }
 
 func (t *Transaction) IsItself() bool {

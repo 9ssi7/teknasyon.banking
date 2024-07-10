@@ -10,10 +10,10 @@ import (
 
 type Account struct {
 	Base
-	UserId   uuid.UUID            `json:"user_id" gorm:"type:uuid;not null"`
+	UserId   uuid.UUID            `json:"user_id" gorm:"type:uuid;not null;index"`
 	Name     string               `json:"name" gorm:"type:varchar(255);not null"`
-	Owner    string               `json:"owner" gorm:"type:varchar(255);not null"`
-	Iban     string               `json:"iban" gorm:"type:varchar(255);not null"`
+	Owner    string               `json:"owner" gorm:"type:varchar(255);not null;index:mt_ibn_owner"`
+	Iban     string               `json:"iban" gorm:"type:varchar(255);not null;index:mt_ibn_owner"`
 	Currency currency.Currency    `json:"currency" gorm:"type:varchar(3);not null"`
 	Balance  decimal.Decimal      `json:"balance" gorm:"type:decimal;not null"`
 	Status   valobj.AccountStatus `json:"status" gorm:"type:varchar(255);not null"`
