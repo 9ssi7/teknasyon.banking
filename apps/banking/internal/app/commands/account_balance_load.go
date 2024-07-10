@@ -37,7 +37,7 @@ func NewAccountBalanceLoadHandler(v validation.Service, accountRepo abstracts.Ac
 		if err != nil {
 			return nil, rescode.Failed
 		}
-		account.AddBalance(amount)
+		account.Credit(amount)
 		if err := accountRepo.Save(ctx, account); err != nil {
 			return nil, err
 		}

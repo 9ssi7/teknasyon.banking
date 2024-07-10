@@ -51,14 +51,6 @@ func (a *Account) CanCredit(amount decimal.Decimal) bool {
 	return a.IsAvailable() && amount.GreaterThan(decimal.Zero) && a.Balance.GreaterThanOrEqual(amount)
 }
 
-func (a *Account) AddBalance(amount decimal.Decimal) {
-	a.Balance = a.Balance.Add(amount)
-}
-
-func (a *Account) SubBalance(amount decimal.Decimal) {
-	a.Balance = a.Balance.Sub(amount)
-}
-
 func NewAccount(userId uuid.UUID, name string, owner string, currency currency.Currency) *Account {
 	return &Account{
 		UserId:   userId,

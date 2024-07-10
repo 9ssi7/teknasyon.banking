@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"github.com/9ssi7/banking/api/rest/middlewares"
 	restsrv "github.com/9ssi7/banking/api/rest/srv"
 	"github.com/9ssi7/banking/internal/app"
 	"github.com/9ssi7/banking/internal/app/queries"
@@ -19,6 +20,7 @@ func transactionList(app app.App) fiber.Handler {
 			return err
 		}
 		query.Pagi.Default()
+		query.UserId = middlewares.AccessMustParse(c).Id
 		res, err := app.Queries.TransactionList(c.UserContext(), query)
 		if err != nil {
 			return err

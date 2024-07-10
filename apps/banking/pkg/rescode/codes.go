@@ -24,6 +24,9 @@ const (
 	codeRecaptchaFailed   uint64 = 3102
 	codeRecaptchaRequired uint64 = 3103
 
-	codeAccountBalanceInsufficient uint64 = 4000
-	codeAccountNotAvailable        uint64 = 4001
+	codeAccountBalanceInsufficient   uint64 = 4000
+	codeAccountNotAvailable          uint64 = 4001
+	codeToAccountNotAvailable        uint64 = 4001
+	codeAccountNotFound              uint64 = 4002
+	codeAccountTransferToSameAccount uint64 = 4003
 )

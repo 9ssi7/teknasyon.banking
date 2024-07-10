@@ -37,5 +37,6 @@ func (s srv) Listen() error {
 	routes.Auth(app, restsrv, s.app)
 	routes.Account(app, restsrv, s.app)
 	routes.Transaction(app, restsrv, s.app)
+	routes.MoneyTransfer(app, restsrv, s.app)
 	return app.Listen(fmt.Sprintf("%v:%v", configs.Http.Host, configs.Http.Port))
 }
