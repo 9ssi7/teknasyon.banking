@@ -22,6 +22,7 @@ const (
 	TransactionKindWithdrawal TransactionKind = "withdrawal"
 	TransactionKindDeposit    TransactionKind = "deposit"
 	TransactionKindTransfer   TransactionKind = "transfer"
+	TransactionKindFee        TransactionKind = "fee"
 )
 
 const (

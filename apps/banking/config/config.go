@@ -73,6 +73,7 @@ var IsDevelopment bool = false
 type App struct {
 	IsDevelopment bool   `env:"IS_DEVELOPMENT" envDefault:"false"`
 	PublicHost    string `env:"PUBLIC_HOST"`
+	ProcessFee    int    `env:"PROCESS_FEE" envDefault:"1"`
 	Adapters      struct {
 		Smtp Smtp
 		// Sms  Sms
