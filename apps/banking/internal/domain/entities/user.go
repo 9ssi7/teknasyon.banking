@@ -13,12 +13,11 @@ type User struct {
 	Base
 	valobj.Audit
 	Name       string         `json:"name" gorm:"type:varchar(255);not null"`
-	Email      string         `json:"email" gorm:"type:varchar(255);not null"`
-	Phone      *string        `json:"phone" gorm:"type:varchar(255)"`
+	Email      string         `json:"email" gorm:"type:varchar(255);not null;unique"`
 	IsActive   bool           `json:"is_active" gorm:"type:boolean;not null;default:true"`
 	Roles      pq.StringArray `json:"roles" gorm:"type:text[]"`
-	TempToken  *string        `json:"temp_token" gorm:"type:varchar(255);default:null"`
-	VerifiedAt *time.Time     `json:"verified_at" gorm:"type:timestamp;default:null"`
+	TempToken  *string        `json:"temp_token" gorm:"type:varchar(255);default:null;index:idx_verifier"`
+	VerifiedAt *time.Time     `json:"verified_at" gorm:"type:timestamp;default:null;index:idx_verifier"`
 }
 
 func (u *User) AddRole(role string) {

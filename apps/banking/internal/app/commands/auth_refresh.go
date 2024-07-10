@@ -41,7 +41,6 @@ func NewAuthRefreshHandler(sessionRepo abstracts.SessionRepo, userRepo abstracts
 			Id:    user.Id,
 			Name:  user.Name,
 			Email: user.Email,
-			Phone: user.Phone,
 			Roles: user.Roles,
 		})
 		if err != nil {
