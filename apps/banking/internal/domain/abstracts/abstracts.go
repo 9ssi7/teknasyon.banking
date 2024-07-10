@@ -44,4 +44,5 @@ type Repositories struct {
 	VerifyRepo  VerifyRepo
 	SessionRepo SessionRepo
 	UserRepo    UserRepo
+	AccountRepo AccountRepo
 }
