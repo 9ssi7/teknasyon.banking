@@ -41,6 +41,6 @@ func NewHandler(r abstracts.Repositories, v validation.Service) Handlers {
 		AccountBalanceLoad:     NewAccountBalanceLoadHandler(v, r.AccountRepo, r.TransactionRepo),
 		AccountBalanceWithdraw: NewAccountBalanceWithdrawHandler(v, r.AccountRepo, r.TransactionRepo),
 
-		MoneyTransfer: NewMoneyTransferHandler(v, r.AccountRepo, r.TransactionRepo),
+		MoneyTransfer: NewMoneyTransferHandler(v, r.UserRepo, r.AccountRepo, r.TransactionRepo),
 	}
 }

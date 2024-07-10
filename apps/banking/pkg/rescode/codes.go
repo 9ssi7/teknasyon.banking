@@ -29,4 +29,5 @@ const (
 	codeToAccountNotAvailable        uint64 = 4001
 	codeAccountNotFound              uint64 = 4002
 	codeAccountTransferToSameAccount uint64 = 4003
+	codeAccountCurrencyMismatch      uint64 = 4004
 )

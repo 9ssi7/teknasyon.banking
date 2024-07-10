@@ -19,7 +19,10 @@ func moneyTransfer(app app.App) fiber.Handler {
 		if err := c.BodyParser(&cmd); err != nil {
 			return err
 		}
-		cmd.UserId = middlewares.AccessMustParse(c).Id
+		currentUser := middlewares.AccessMustParse(c)
+		cmd.UserId = currentUser.Id
+		cmd.UserEmail = currentUser.Email
+		cmd.UserName = currentUser.Name
 		res, err := app.Commands.MoneyTransfer(c.UserContext(), cmd)
 		if err != nil {
 			return err

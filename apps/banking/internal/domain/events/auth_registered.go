@@ -20,7 +20,7 @@ func OnAuthRegistered(e AuthRegistered) {
 		mail.GetClient().SendWithTemplate(mail.SendWithTemplateConfig{
 			SendConfig: mail.SendConfig{
 				To:      []string{e.Email},
-				Subject: messages.AuthRegisteredEmailSubject,
+				Subject: messages.AuthEmailSubjectRegistered,
 			},
 			Template: assets.Templates.AuthRegistered,
 			Data: map[string]interface{}{

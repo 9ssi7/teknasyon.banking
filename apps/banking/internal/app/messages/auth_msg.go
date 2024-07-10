@@ -1,6 +1,6 @@
 package messages
 
 const (
-	AuthVerifyEmailSubject     = "Verify your session"
-	AuthRegisteredEmailSubject = "Welcome to our service"
+	AuthEmailSubjectVerify     = "Verify your session"
+	AuthEmailSubjectRegistered = "Welcome to our service"
 )

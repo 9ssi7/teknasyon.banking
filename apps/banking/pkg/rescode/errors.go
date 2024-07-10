@@ -103,6 +103,10 @@ var (
 		HttpStatus:    http.StatusBadRequest,
 		Translateable: true,
 	})
+	AccountCurrencyMismatch = New(codeAccountCurrencyMismatch, msgAccountCurrencyMismatch, nil, Extra{
+		HttpStatus:    http.StatusBadRequest,
+		Translateable: true,
+	})
 )
 
 func ValidationFailed(data interface{}) *RC {
