@@ -31,10 +31,11 @@ func main() {
 	}
 
 	r := abstracts.Repositories{
-		UserRepo:    repos.NewUserRepo(db),
-		AccountRepo: repos.NewAccountRepo(db),
-		SessionRepo: repos.NewSessionRepo(kvdb),
-		VerifyRepo:  repos.NewVerifyRepo(kvdb),
+		UserRepo:        repos.NewUserRepo(db),
+		AccountRepo:     repos.NewAccountRepo(db),
+		TransactionRepo: repos.NewTransactionRepo(db),
+		SessionRepo:     repos.NewSessionRepo(kvdb),
+		VerifyRepo:      repos.NewVerifyRepo(kvdb),
 	}
 
 	v := validation.New()
