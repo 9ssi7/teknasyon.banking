@@ -1,0 +1,30 @@
+name: banking-compose
+services:
+  banking-db:
+    image: "postgres:14.5"
+    container_name: "banking-db"
+    env_file:
+      - .env
+    volumes:
+      - ../temp/db:/var/lib/postgresql/data
+    networks:
+      - banking-compose
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+
+  banking-redis:
+    image: "redis:latest"
+    container_name: "banking-redis"
+    ports:
+      - "6379:6379"
+    networks:
+      - banking-compose
+
+networks:
+  banking-compose:
+    name: banking
+    external: true

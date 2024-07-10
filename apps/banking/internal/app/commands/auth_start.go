@@ -3,13 +3,11 @@ package commands
 import (
 	"context"
 
-	"github.com/9ssi7/banking/assets"
-	"github.com/9ssi7/banking/internal/app/messages"
 	"github.com/9ssi7/banking/internal/domain/abstracts"
 	"github.com/9ssi7/banking/internal/domain/aggregates"
 	"github.com/9ssi7/banking/internal/domain/entities"
+	"github.com/9ssi7/banking/internal/domain/events"
 	"github.com/9ssi7/banking/internal/domain/valobj"
-	"github.com/9ssi7/banking/internal/infra/mail"
 	"github.com/9ssi7/banking/pkg/cqrs"
 	"github.com/9ssi7/banking/pkg/rescode"
 	"github.com/9ssi7/banking/pkg/state"
@@ -62,22 +60,11 @@ func NewAuthStartHandler(v validation.Service, verifyRepo abstracts.VerifyRepo, 
 		if err != nil {
 			return nil, err
 		}
-		go func() {
-			mail.GetClient().SendWithTemplate(mail.SendWithTemplateConfig{
-				SendConfig: mail.SendConfig{
-					To:      []string{user.Email},
-					Subject: messages.AuthVerifySubject,
-					Message: verify.Code,
-				},
-				Template: assets.Templates.AuthVerify,
-				Data: map[string]interface{}{
-					"Code":    verify.Code,
-					"IP":      mail.GetField(cmd.Device.IP),
-					"Browser": mail.GetField(cmd.Device.Name),
-					"OS":      mail.GetField(cmd.Device.OS),
-				},
-			})
-		}()
+		events.OnAuthStarted(events.AuthStarted{
+			Email:  user.Email,
+			Code:   verify.Code,
+			Device: *cmd.Device,
+		})
 		return &AuthStartRes{
 			VerifyToken: verifyToken,
 		}, nil

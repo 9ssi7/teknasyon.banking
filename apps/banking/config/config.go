@@ -71,7 +71,8 @@ type Turnstile struct {
 var IsDevelopment bool = false
 
 type App struct {
-	IsDevelopment bool `env:"IS_DEVELOPMENT" envDefault:"false"`
+	IsDevelopment bool   `env:"IS_DEVELOPMENT" envDefault:"false"`
+	PublicHost    string `env:"PUBLIC_HOST"`
 	Adapters      struct {
 		Smtp Smtp
 		// Sms  Sms

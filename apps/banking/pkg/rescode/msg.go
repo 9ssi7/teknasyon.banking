@@ -7,6 +7,7 @@ const (
 
 	msgUserDisabled       string = "user_disabled"
 	msgUserVerifyRequired string = "user_verify_required"
+	msgEmailAlreadyExists string = "email_already_exists"
 
 	msgVerificationExpired          string = "verification_expired"
 	MsfVerificationExceeded         string = "verification_exceeded"

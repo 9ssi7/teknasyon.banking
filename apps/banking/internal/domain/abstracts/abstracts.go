@@ -11,6 +11,7 @@ import (
 
 type UserRepo interface {
 	Save(ctx context.Context, user *entities.User) error
+	IsExistsByEmail(ctx context.Context, email string) (bool, error)
 	FindByToken(ctx context.Context, token string) (*entities.User, error)
 	FindById(ctx context.Context, id uuid.UUID) (*entities.User, error)
 	FindByEmail(ctx context.Context, email string) (*entities.User, error)

@@ -40,7 +40,7 @@ func (s *sessionRepo) FindByIds(ctx context.Context, userId uuid.UUID, deviceId 
 	key := s.calcKey(userId, deviceId)
 	e, _, err := s.getByKey(ctx, key)
 	if err != nil {
-		return nil, err
+		return nil, rescode.Failed
 	}
 	if e == nil {
 		return nil, rescode.NotFound
@@ -57,7 +57,7 @@ func (s *sessionRepo) FindAllByUserId(ctx context.Context, userId uuid.UUID) ([]
 	for i, k := range keys {
 		e, _, err := s.getByKey(ctx, k)
 		if err != nil {
-			return nil, err
+			return nil, rescode.Failed
 		}
 		entities[i] = e
 	}
@@ -67,7 +67,7 @@ func (s *sessionRepo) FindAllByUserId(ctx context.Context, userId uuid.UUID) ([]
 func (s *sessionRepo) checkExistAndDel(ctx context.Context, key string) error {
 	exist, err := s.db.Exist(ctx, key)
 	if err != nil {
-		return err
+		return rescode.Failed
 	}
 	if exist {
 		return s.db.Del(ctx, key)

@@ -6,17 +6,21 @@ import (
 )
 
 type Handlers struct {
-	AuthLogin   AuthLoginHandler
-	AuthStart   AuthStartHandler
-	AuthRefresh AuthRefreshHandler
-	AuthLogout  AuthLogoutHandler
+	AuthLogin    AuthLoginHandler
+	AuthRegister AuthRegisterHandler
+	AuthStart    AuthStartHandler
+	AuthRefresh  AuthRefreshHandler
+	AuthLogout   AuthLogoutHandler
+	AuthVerify   AuthVerifyHandler
 }
 
 func NewHandler(r abstracts.Repositories, v validation.Service) Handlers {
 	return Handlers{
-		AuthLogin:   NewAuthLoginHandler(v, r.UserRepo, r.VerifyRepo, r.SessionRepo),
-		AuthStart:   NewAuthStartHandler(v, r.VerifyRepo, r.UserRepo),
-		AuthLogout:  NewAuthLogoutHandler(r.SessionRepo),
-		AuthRefresh: NewAuthRefreshHandler(r.SessionRepo, r.UserRepo),
+		AuthLogin:    NewAuthLoginHandler(v, r.UserRepo, r.VerifyRepo, r.SessionRepo),
+		AuthStart:    NewAuthStartHandler(v, r.VerifyRepo, r.UserRepo),
+		AuthLogout:   NewAuthLogoutHandler(r.SessionRepo),
+		AuthRefresh:  NewAuthRefreshHandler(r.SessionRepo, r.UserRepo),
+		AuthRegister: NewAuthRegisterHandler(v, r.UserRepo),
+		AuthVerify:   NewAuthVerifyHandler(r.UserRepo),
 	}
 }
