@@ -25,4 +25,5 @@ const (
 	msgRecaptchaRequired string = "recaptcha_required"
 
 	msgAccountBalanceInsufficient string = "account_balance_insufficient"
+	msgAccountNotAvailable        string = "account_not_available"
 )

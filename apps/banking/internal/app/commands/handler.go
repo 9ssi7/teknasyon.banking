@@ -31,12 +31,12 @@ func NewHandler(r abstracts.Repositories, v validation.Service) Handlers {
 		AuthRegister: NewAuthRegisterHandler(v, r.UserRepo),
 		AuthVerify:   NewAuthVerifyHandler(r.UserRepo),
 
-		AccountCreate:          NewAccountCreateHandler(r.AccountRepo),
-		AccountActivate:        NewAccountActivateHandler(r.AccountRepo),
-		AccountFreeze:          NewAccountFreezeHandler(r.AccountRepo),
-		AccountLock:            NewAccountLockHandler(r.AccountRepo),
-		AccountSuspend:         NewAccountSuspendHandler(r.AccountRepo),
-		AccountBalanceLoad:     NewAccountBalanceLoadHandler(r.AccountRepo),
-		AccountBalanceWithdraw: NewAccountBalanceWithdrawHandler(r.AccountRepo),
+		AccountCreate:          NewAccountCreateHandler(v, r.AccountRepo),
+		AccountActivate:        NewAccountActivateHandler(v, r.AccountRepo),
+		AccountFreeze:          NewAccountFreezeHandler(v, r.AccountRepo),
+		AccountLock:            NewAccountLockHandler(v, r.AccountRepo),
+		AccountSuspend:         NewAccountSuspendHandler(v, r.AccountRepo),
+		AccountBalanceLoad:     NewAccountBalanceLoadHandler(v, r.AccountRepo),
+		AccountBalanceWithdraw: NewAccountBalanceWithdrawHandler(v, r.AccountRepo),
 	}
 }

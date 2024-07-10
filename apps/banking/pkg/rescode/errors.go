@@ -87,6 +87,10 @@ var (
 		HttpStatus:    http.StatusBadRequest,
 		Translateable: true,
 	})
+	AccountNotAvailable = New(codeAccountNotAvailable, msgAccountNotAvailable, Extra{
+		HttpStatus:    http.StatusBadRequest,
+		Translateable: true,
+	})
 )
 
 func ValidationFailed(data interface{}) *RC {

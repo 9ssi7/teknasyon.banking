@@ -7,6 +7,7 @@ import (
 	"github.com/9ssi7/banking/internal/domain/entities"
 	"github.com/9ssi7/banking/pkg/cqrs"
 	"github.com/9ssi7/banking/pkg/currency"
+	"github.com/9ssi7/banking/pkg/validation"
 	"github.com/google/uuid"
 )
 
@@ -19,9 +20,12 @@ type AccountCreate struct {
 
 type AccountCreateHandler cqrs.HandlerFunc[AccountCreate, *uuid.UUID]
 
-func NewAccountCreateHandler(accountRepo abstracts.AccountRepo) AccountCreateHandler {
-	return func(ctx context.Context, query AccountCreate) (*uuid.UUID, error) {
-		account := entities.NewAccount(query.UserId, query.Name, query.Owner, currency.Currency(query.Currency))
+func NewAccountCreateHandler(v validation.Service, accountRepo abstracts.AccountRepo) AccountCreateHandler {
+	return func(ctx context.Context, cmd AccountCreate) (*uuid.UUID, error) {
+		if err := v.ValidateStruct(ctx, cmd); err != nil {
+			return nil, err
+		}
+		account := entities.NewAccount(cmd.UserId, cmd.Name, cmd.Owner, currency.Currency(cmd.Currency))
 		if err := accountRepo.Save(ctx, account); err != nil {
 			return nil, err
 		}
