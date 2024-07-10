@@ -19,6 +19,13 @@ type UserRepo interface {
 	Filter(ctx context.Context, req *list.PagiRequest, search string, isActive string) (*list.PagiResponse[*entities.User], error)
 }
 
+type AccountRepo interface {
+	Save(ctx context.Context, account *entities.Account) error
+	ListByUserId(ctx context.Context, userId uuid.UUID, pagi *list.PagiRequest) (*list.PagiResponse[*entities.Account], error)
+	FindByIbanAndOwner(ctx context.Context, iban string, owner string) (*entities.Account, error)
+	FindByUserIdAndId(ctx context.Context, userId uuid.UUID, id uuid.UUID) (*entities.Account, error)
+}
+
 type SessionRepo interface {
 	Save(ctx context.Context, userId uuid.UUID, session *aggregates.Session) error
 	FindByIds(ctx context.Context, userId uuid.UUID, deviceId string) (*aggregates.Session, error)
