@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 
+	"github.com/9ssi7/banking/config"
 	"github.com/9ssi7/banking/internal/domain/abstracts"
 	"github.com/9ssi7/banking/internal/domain/entities"
 	"github.com/9ssi7/banking/internal/domain/events"
@@ -52,24 +53,35 @@ func NewMoneyTransferHandler(v validation.Service, userRepo abstracts.UserRepo, 
 		if account.Currency != toAccount.Currency {
 			return nil, rescode.AccountCurrencyMismatch
 		}
-		amount, err := decimal.NewFromString(cmd.Amount)
+		amountToTransfer, err := decimal.NewFromString(cmd.Amount)
 		if err != nil {
 			return nil, err
 		}
-		if !account.CanCredit(amount) {
+		amountToPay := amountToTransfer
+		if account.UserId != toAccount.UserId && config.ReadValue().ProcessFee != 0 {
+			amountToPay = amountToTransfer.Add(decimal.NewFromInt(int64(config.ReadValue().ProcessFee)))
+		}
+
+		if !account.CanCredit(amountToPay) {
 			return nil, rescode.AccountBalanceInsufficient
 		}
 
-		transaction := entities.NewTransaction(account.Id, toAccount.Id, amount, cmd.Description, valobj.TransactionKindTransfer)
+		transaction := entities.NewTransaction(account.Id, toAccount.Id, amountToTransfer, cmd.Description, valobj.TransactionKindTransfer)
 		if err := transactionRepo.Save(ctx, transaction); err != nil {
 			return nil, err
 		}
+		if !amountToPay.Equal(amountToTransfer) {
+			transactionFee := entities.NewTransaction(account.Id, account.Id, decimal.NewFromInt(int64(config.ReadValue().ProcessFee)), "Process Fee", valobj.TransactionKindFee)
+			if err := transactionRepo.Save(ctx, transactionFee); err != nil {
+				return nil, err
+			}
+		}
 
-		account.Debit(amount)
+		account.Debit(amountToPay)
 		if err := accountRepo.Save(ctx, account); err != nil {
 			return nil, err
 		}
-		toAccount.Credit(amount)
+		toAccount.Credit(amountToTransfer)
 		if err := accountRepo.Save(ctx, toAccount); err != nil {
 			return nil, err
 		}
@@ -82,13 +94,13 @@ func NewMoneyTransferHandler(v validation.Service, userRepo abstracts.UserRepo, 
 			events.OnTransferIncoming(events.TranfserIncoming{
 				Email:       toUser.Email,
 				Name:        toUser.Name,
-				Amount:      amount.String(),
+				Amount:      amountToTransfer.String(),
 				Currency:    toAccount.Currency.String(),
 				Account:     toAccount.Name,
 				Description: cmd.Description,
 			})
 			events.OnTransferOutgoing(events.TranfserOutgoing{
-				Amount:      amount.String(),
+				Amount:      amountToPay.String(),
 				Email:       cmd.UserEmail,
 				Name:        cmd.UserName,
 				Currency:    account.Currency.String(),
