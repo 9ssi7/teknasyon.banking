@@ -82,6 +82,11 @@ var (
 		HttpStatus:    http.StatusForbidden,
 		Translateable: true,
 	})
+
+	AccountBalanceInsufficient = New(codeAccountBalanceInsufficient, msgAccountBalanceInsufficient, Extra{
+		HttpStatus:    http.StatusBadRequest,
+		Translateable: true,
+	})
 )
 
 func ValidationFailed(data interface{}) *RC {

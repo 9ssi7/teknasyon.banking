@@ -51,10 +51,6 @@ func (a *Account) CanCredit(amount decimal.Decimal) bool {
 	return a.IsAvailable() && amount.GreaterThan(decimal.Zero) && a.Balance.GreaterThanOrEqual(amount)
 }
 
-func (a *Account) CanDebit(amount decimal.Decimal) bool {
-	return a.IsAvailable() && amount.GreaterThan(decimal.Zero) && a.Balance.GreaterThanOrEqual(amount)
-}
-
 func (a *Account) AddBalance(amount decimal.Decimal) {
 	a.Balance = a.Balance.Add(amount)
 }
