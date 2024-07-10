@@ -26,4 +26,5 @@ const (
 
 	codeAccountBalanceInsufficient uint64 = 4000
 	codeAccountNotAvailable        uint64 = 4001
+	codeAccountNotFound            uint64 = 4002
 )

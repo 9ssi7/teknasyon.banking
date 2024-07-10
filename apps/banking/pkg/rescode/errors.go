@@ -83,12 +83,16 @@ var (
 		Translateable: true,
 	})
 
-	AccountBalanceInsufficient = New(codeAccountBalanceInsufficient, msgAccountBalanceInsufficient, Extra{
+	AccountBalanceInsufficient = New(codeAccountBalanceInsufficient, msgAccountBalanceInsufficient, nil, Extra{
 		HttpStatus:    http.StatusBadRequest,
 		Translateable: true,
 	})
-	AccountNotAvailable = New(codeAccountNotAvailable, msgAccountNotAvailable, Extra{
+	AccountNotAvailable = New(codeAccountNotAvailable, msgAccountNotAvailable, nil, Extra{
 		HttpStatus:    http.StatusBadRequest,
+		Translateable: true,
+	})
+	AccountNotFound = New(codeAccountNotFound, msgAccountNotFound, nil, Extra{
+		HttpStatus:    http.StatusNotFound,
 		Translateable: true,
 	})
 )

@@ -26,4 +26,5 @@ const (
 
 	msgAccountBalanceInsufficient string = "account_balance_insufficient"
 	msgAccountNotAvailable        string = "account_not_available"
+	msgAccountNotFound            string = "account_not_found"
 )

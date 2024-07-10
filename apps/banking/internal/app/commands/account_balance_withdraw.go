@@ -40,7 +40,7 @@ func NewAccountBalanceWithdrawHandler(v validation.Service, accountRepo abstract
 		if !account.CanCredit(amount) {
 			return nil, rescode.AccountBalanceInsufficient
 		}
-		account.SubBalance(amount)
+		account.Debit(amount)
 		if err := accountRepo.Save(ctx, account); err != nil {
 			return nil, err
 		}

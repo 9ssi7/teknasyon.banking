@@ -20,6 +20,8 @@ type Handlers struct {
 	AccountSuspend         AccountSuspendHandler
 	AccountBalanceLoad     AccountBalanceLoadHandler
 	AccountBalanceWithdraw AccountBalanceWithdrawHandler
+
+	MoneyTransfer MoneyTransferHandler
 }
 
 func NewHandler(r abstracts.Repositories, v validation.Service) Handlers {
@@ -38,5 +40,7 @@ func NewHandler(r abstracts.Repositories, v validation.Service) Handlers {
 		AccountSuspend:         NewAccountSuspendHandler(v, r.AccountRepo),
 		AccountBalanceLoad:     NewAccountBalanceLoadHandler(v, r.AccountRepo, r.TransactionRepo),
 		AccountBalanceWithdraw: NewAccountBalanceWithdrawHandler(v, r.AccountRepo, r.TransactionRepo),
+
+		MoneyTransfer: NewMoneyTransferHandler(v, r.AccountRepo, r.TransactionRepo),
 	}
 }

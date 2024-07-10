@@ -7,6 +7,7 @@ import (
 	"github.com/9ssi7/banking/pkg/currency"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
+	"github.com/jbub/banking/iban"
 	"github.com/shopspring/decimal"
 )
 
@@ -18,6 +19,10 @@ func validateUUID(field reflect.Value) interface{} {
 		return valuer.String()
 	}
 	return nil
+}
+
+func validateIban(fl validator.FieldLevel) bool {
+	return iban.Validate(fl.Field().String()) == nil
 }
 
 func validateAmount(fl validator.FieldLevel) bool {
