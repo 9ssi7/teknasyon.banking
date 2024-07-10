@@ -13,7 +13,7 @@ import (
 )
 
 type TransactionList struct {
-	AccountId uuid.UUID `json:"account_id" params:"account_id" validate:"required,uuid"`
+	AccountId uuid.UUID `query:"account_id" validate:"required,uuid"`
 	Pagi      list.PagiRequest
 	Filters   valobj.TransactionFilters
 }
@@ -50,6 +50,7 @@ func NewTransactionListHandler(v validation.Service, transactionRepo abstracts.T
 				}
 				dto.AccountName = &a.Name
 			}
+			result.List = append(result.List, dto)
 		}
 		return result, nil
 	}

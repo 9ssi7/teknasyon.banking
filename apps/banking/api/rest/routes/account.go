@@ -11,7 +11,7 @@ import (
 )
 
 func Account(router fiber.Router, srv restsrv.Srv, app app.App) {
-	group := router.Group("/account")
+	group := router.Group("/accounts")
 	group.Post("/", srv.AccessInit(), srv.AccessRequired(), srv.Timeout(accountCreate(app)))
 	group.Patch("/:account_id/activate", srv.AccessInit(), srv.AccessRequired(), srv.Timeout(accountActivate(app)))
 	group.Patch("/:account_id/freeze", srv.AccessInit(), srv.AccessRequired(), srv.Timeout(accountFreeze(app)))
