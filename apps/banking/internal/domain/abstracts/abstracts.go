@@ -7,10 +7,17 @@ import (
 	"github.com/9ssi7/banking/internal/domain/entities"
 	"github.com/9ssi7/banking/internal/domain/valobj"
 	"github.com/9ssi7/banking/pkg/list"
+	"github.com/9ssi7/txn"
 	"github.com/google/uuid"
 )
 
+type TxnAdapterRepo interface {
+	GetTxnAdapter() txn.Adapter
+}
+
 type UserRepo interface {
+	TxnAdapterRepo
+
 	Save(ctx context.Context, user *entities.User) error
 	IsExistsByEmail(ctx context.Context, email string) (bool, error)
 	FindByToken(ctx context.Context, token string) (*entities.User, error)
@@ -21,6 +28,8 @@ type UserRepo interface {
 }
 
 type AccountRepo interface {
+	TxnAdapterRepo
+
 	Save(ctx context.Context, account *entities.Account) error
 	ListByUserId(ctx context.Context, userId uuid.UUID, pagi *list.PagiRequest) (*list.PagiResponse[*entities.Account], error)
 	FindByIbanAndOwner(ctx context.Context, iban string, owner string) (*entities.Account, error)
@@ -29,6 +38,8 @@ type AccountRepo interface {
 }
 
 type TransactionRepo interface {
+	TxnAdapterRepo
+
 	Save(ctx context.Context, transaction *entities.Transaction) error
 	Filter(ctx context.Context, accountId uuid.UUID, pagi *list.PagiRequest, filters *valobj.TransactionFilters) (*list.PagiResponse[*entities.Transaction], error)
 }

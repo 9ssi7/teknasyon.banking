@@ -4,21 +4,23 @@ go 1.22.0
 
 require (
 	github.com/9ssi7/turnstile v1.0.0
+	github.com/9ssi7/txn v0.0.1-beta.7
+	github.com/9ssi7/txn/txngorm v0.0.1-beta.8
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1
 	github.com/go-playground/validator/v10 v10.15.1
-	github.com/go-redis/redis/v8 v8.11.5
 	github.com/goccy/go-json v0.10.2
 	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/google/uuid v1.6.0
 	github.com/lib/pq v1.10.9
 	github.com/mileusna/useragent v1.3.4
+	github.com/redis/go-redis/v9 v9.6.0
 	github.com/shopspring/decimal v1.4.0
 	github.com/xhit/go-simple-mail/v2 v2.16.0
 	go.deanishe.net/env v0.5.1
 	gorm.io/driver/postgres v1.5.9
-	gorm.io/gorm v1.25.10
+	gorm.io/gorm v1.25.11
 )
 
 require (
@@ -40,7 +42,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
-	github.com/stretchr/testify v1.8.4 // indirect
+	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/tinylib/msgp v1.1.8 // indirect
 	github.com/toorop/go-dkim v0.0.0-20201103131630-e1cd1a0a5208 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect

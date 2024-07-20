@@ -13,17 +13,19 @@ import (
 )
 
 type transactionRepo struct {
+	txnGormRepo
 	db *gorm.DB
 }
 
 func NewTransactionRepo(db *gorm.DB) abstracts.TransactionRepo {
 	return &transactionRepo{
-		db: db,
+		db:          db,
+		txnGormRepo: newTxnGormRepo(db),
 	}
 }
 
 func (r *transactionRepo) Save(ctx context.Context, transaction *entities.Transaction) error {
-	if err := r.db.WithContext(ctx).Save(transaction).Error; err != nil {
+	if err := r.adapter.GetCurrent(ctx).Save(transaction).Error; err != nil {
 		return rescode.Failed
 	}
 	return nil
@@ -31,7 +33,7 @@ func (r *transactionRepo) Save(ctx context.Context, transaction *entities.Transa
 
 func (r *transactionRepo) Filter(ctx context.Context, accountId uuid.UUID, pagi *list.PagiRequest, filters *valobj.TransactionFilters) (*list.PagiResponse[*entities.Transaction], error) {
 	var transactions []*entities.Transaction
-	query := r.db.WithContext(ctx).Model(&entities.Transaction{}).Where("sender_id = ? OR receiver_id = ?", accountId, accountId)
+	query := r.adapter.GetCurrent(ctx).Model(&entities.Transaction{}).Where("sender_id = ? OR receiver_id = ?", accountId, accountId)
 	var total int64
 	if err := query.Count(&total).Error; err != nil {
 		return nil, rescode.Failed

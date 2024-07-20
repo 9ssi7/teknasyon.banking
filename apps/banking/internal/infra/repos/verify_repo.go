@@ -7,15 +7,15 @@ import (
 
 	"github.com/9ssi7/banking/internal/domain/abstracts"
 	"github.com/9ssi7/banking/internal/domain/aggregates"
-	"github.com/9ssi7/banking/internal/infra/keyval"
 	"github.com/9ssi7/banking/pkg/rescode"
+	"github.com/redis/go-redis/v9"
 )
 
 type verifyRepo struct {
-	db keyval.DB
+	db *redis.Client
 }
 
-func NewVerifyRepo(db keyval.DB) abstracts.VerifyRepo {
+func NewVerifyRepo(db *redis.Client) abstracts.VerifyRepo {
 	return &verifyRepo{
 		db: db,
 	}
@@ -26,14 +26,14 @@ func (r *verifyRepo) Save(ctx context.Context, token string, verify *aggregates.
 	if err != nil {
 		return rescode.Failed
 	}
-	if err = r.db.SetEx(ctx, r.calcKey(verify.DeviceId, token), b, 5*time.Minute); err != nil {
+	if err = r.db.SetEx(ctx, r.calcKey(verify.DeviceId, token), b, 5*time.Minute).Err(); err != nil {
 		return rescode.Failed
 	}
 	return nil
 }
 
 func (r *verifyRepo) IsExists(ctx context.Context, token string, deviceId string) (bool, error) {
-	res, err := r.db.Get(ctx, r.calcKey(deviceId, token))
+	res, err := r.db.Get(ctx, r.calcKey(deviceId, token)).Result()
 	if err != nil {
 		return false, rescode.Failed
 	}
@@ -41,7 +41,7 @@ func (r *verifyRepo) IsExists(ctx context.Context, token string, deviceId string
 }
 
 func (r *verifyRepo) Find(ctx context.Context, token string, deviceId string) (*aggregates.Verify, error) {
-	res, err := r.db.Get(ctx, r.calcKey(deviceId, token))
+	res, err := r.db.Get(ctx, r.calcKey(deviceId, token)).Result()
 	if err != nil {
 		return nil, rescode.Failed
 	}
@@ -53,7 +53,7 @@ func (r *verifyRepo) Find(ctx context.Context, token string, deviceId string) (*
 }
 
 func (r *verifyRepo) Delete(ctx context.Context, token string, deviceId string) error {
-	if err := r.db.Del(ctx, r.calcKey(deviceId, token)); err != nil {
+	if err := r.db.Del(ctx, r.calcKey(deviceId, token)).Err(); err != nil {
 		return rescode.Failed
 	}
 	return nil

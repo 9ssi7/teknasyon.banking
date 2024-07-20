@@ -1,6 +1,9 @@
 package config
 
 import (
+	"fmt"
+	"sync"
+
 	"github.com/gofiber/fiber/v2"
 	"go.deanishe.net/env"
 )
@@ -101,18 +104,18 @@ func ApplyCookie(cookie *fiber.Cookie) *fiber.Cookie {
 }
 
 var configs *App
+var once sync.Once
 
-func ReadValue() *App {
-	if configs != nil {
-		return configs
-	}
-	if configs == nil {
-		configs = &App{}
-	}
+func parse() {
+	fmt.Println("Reading configurations...")
+	configs = &App{}
 	err := env.Bind(configs)
 	if err != nil {
 		panic(err)
 	}
-	IsDevelopment = configs.IsDevelopment
+}
+
+func ReadValue() *App {
+	once.Do(parse)
 	return configs
 }

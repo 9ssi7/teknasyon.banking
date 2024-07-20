@@ -1,6 +1,9 @@
 package main
 
 import (
+	"context"
+	"fmt"
+
 	"github.com/9ssi7/banking/api/rest"
 	"github.com/9ssi7/banking/config"
 	"github.com/9ssi7/banking/internal/app"
@@ -8,21 +11,32 @@ import (
 	"github.com/9ssi7/banking/internal/app/queries"
 	"github.com/9ssi7/banking/internal/app/services"
 	"github.com/9ssi7/banking/internal/domain/abstracts"
-	"github.com/9ssi7/banking/internal/infra/db"
+
 	"github.com/9ssi7/banking/internal/infra/db/migrations"
 	"github.com/9ssi7/banking/internal/infra/db/seeds"
-	"github.com/9ssi7/banking/internal/infra/keyval"
 	"github.com/9ssi7/banking/internal/infra/repos"
+	"github.com/9ssi7/banking/pkg/retry"
 	"github.com/9ssi7/banking/pkg/token"
 	"github.com/9ssi7/banking/pkg/validation"
+	"github.com/redis/go-redis/v9"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func main() {
+	config.ReadValue()
+	config.ReadValue()
+	config.ReadValue()
 	cnf := config.ReadValue()
 	token.Init()
-	db := db.ConnectDB()
-	kvdb := keyval.ConnectDB()
-
+	db, err := connectPostgres(cnf.Database)
+	if err != nil {
+		panic(err)
+	}
+	kvdb, err := connectKeyVal(cnf.KeyValueDb)
+	if err != nil {
+		panic(err)
+	}
 	if cnf.Database.Migrate {
 		migrations.Run(db)
 	}
@@ -45,4 +59,34 @@ func main() {
 		Queries:  queries.NewHandler(r, v),
 		Services: services.NewHandler(),
 	}).Listen()
+}
+
+func connectPostgres(cfg config.Database) (*gorm.DB, error) {
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=%s",
+		cfg.Host, cfg.User, cfg.Password, cfg.Name, cfg.Port, cfg.SslMode)
+	var db *gorm.DB
+	var err error
+	err = retry.Run(func() error {
+		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+		return err
+	}, retry.DefaultConfig)
+	if err != nil {
+		return nil, err
+	}
+	return db, nil
+}
+
+func connectKeyVal(cfg config.KeyValueDb) (*redis.Client, error) {
+	rClient := redis.NewClient(&redis.Options{
+		Addr:     cfg.Host + ":" + cfg.Port,
+		Password: cfg.Pw,
+		DB:       cfg.Db,
+	})
+	err := retry.Run(func() error {
+		return rClient.Ping(context.Background()).Err()
+	}, retry.DefaultConfig)
+	if err != nil {
+		return nil, err
+	}
+	return rClient, nil
 }

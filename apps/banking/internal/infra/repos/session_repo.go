@@ -6,16 +6,16 @@ import (
 
 	"github.com/9ssi7/banking/internal/domain/abstracts"
 	"github.com/9ssi7/banking/internal/domain/aggregates"
-	"github.com/9ssi7/banking/internal/infra/keyval"
 	"github.com/9ssi7/banking/pkg/rescode"
 	"github.com/google/uuid"
+	"github.com/redis/go-redis/v9"
 )
 
 type sessionRepo struct {
-	db keyval.DB
+	db *redis.Client
 }
 
-func NewSessionRepo(db keyval.DB) abstracts.SessionRepo {
+func NewSessionRepo(db *redis.Client) abstracts.SessionRepo {
 	return &sessionRepo{
 		db: db,
 	}
@@ -30,7 +30,7 @@ func (s *sessionRepo) Save(ctx context.Context, userId uuid.UUID, session *aggre
 	if err := s.checkExistAndDel(ctx, key); err != nil {
 		return rescode.Failed
 	}
-	if err := s.db.Set(ctx, key, bytes); err != nil {
+	if err := s.db.Set(ctx, key, bytes, 0).Err(); err != nil {
 		return rescode.Failed
 	}
 	return nil
@@ -49,7 +49,7 @@ func (s *sessionRepo) FindByIds(ctx context.Context, userId uuid.UUID, deviceId 
 }
 
 func (s *sessionRepo) FindAllByUserId(ctx context.Context, userId uuid.UUID) ([]*aggregates.Session, error) {
-	keys, err := s.db.Keys(ctx, s.calcKey(userId, "*"))
+	keys, err := s.db.Keys(ctx, s.calcKey(userId, "*")).Result()
 	if err != nil {
 		return nil, rescode.Failed
 	}
@@ -65,12 +65,12 @@ func (s *sessionRepo) FindAllByUserId(ctx context.Context, userId uuid.UUID) ([]
 }
 
 func (s *sessionRepo) checkExistAndDel(ctx context.Context, key string) error {
-	exist, err := s.db.Exist(ctx, key)
+	exist, err := s.db.Exists(ctx, key).Result()
 	if err != nil {
 		return rescode.Failed
 	}
-	if exist {
-		return s.db.Del(ctx, key)
+	if exist == 1 {
+		return s.db.Del(ctx, key).Err()
 	}
 	return nil
 }
@@ -80,7 +80,7 @@ func (s *sessionRepo) calcKey(userId uuid.UUID, deviceId string) string {
 }
 
 func (s *sessionRepo) getByKey(ctx context.Context, key string) (*aggregates.Session, bool, error) {
-	res, err := s.db.Get(ctx, key)
+	res, err := s.db.Get(ctx, key).Result()
 	if err != nil {
 		return nil, true, rescode.Failed
 	}
@@ -93,7 +93,7 @@ func (s *sessionRepo) getByKey(ctx context.Context, key string) (*aggregates.Ses
 
 func (s *sessionRepo) Destroy(ctx context.Context, userId uuid.UUID, deviceId string) error {
 	key := s.calcKey(userId, deviceId)
-	if err := s.db.Del(ctx, key); err != nil {
+	if err := s.db.Del(ctx, key).Err(); err != nil {
 		return rescode.Failed
 	}
 	return nil
