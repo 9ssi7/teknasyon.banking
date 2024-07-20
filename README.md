@@ -1,3 +1,9 @@
+# Info
+
+I did this project for the case that Teknasyon wanted.
+
+I will make updates here. However, these updates are independent of the case. I will complete the deficiencies of the project. This project is like a small demo application in my hand.
+
 # Teknasyon Banking API
 
 This is a simple banking API that allows you to create, update, delete and list bank accounts, load money into them and transfer money between them.
