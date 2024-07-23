@@ -2,6 +2,7 @@ package rest
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/9ssi7/banking/api/rest/routes"
 	restsrv "github.com/9ssi7/banking/api/rest/srv"
@@ -13,30 +14,40 @@ import (
 )
 
 type srv struct {
-	app app.App
+	app   app.App
+	fiber *fiber.App
+	srv   restsrv.Srv
 }
 
 func New(app app.App) server.Listener {
-	return srv{app: app}
+	restsrv := restsrv.New(app)
+	return srv{
+		app: app,
+		fiber: fiber.New(fiber.Config{
+			ErrorHandler:   restsrv.ErrorHandler(),
+			AppName:        "banking",
+			ServerHeader:   "banking",
+			JSONEncoder:    json.Marshal,
+			JSONDecoder:    json.Unmarshal,
+			CaseSensitive:  true,
+			BodyLimit:      10 * 1024 * 1024,
+			ReadBufferSize: 10 * 1024 * 1024,
+		}),
+		srv: restsrv,
+	}
 }
 
 func (s srv) Listen() error {
 	configs := config.ReadValue()
-	restsrv := restsrv.New(s.app)
-	app := fiber.New(fiber.Config{
-		ErrorHandler:   restsrv.ErrorHandler(),
-		AppName:        "banking",
-		ServerHeader:   "banking",
-		JSONEncoder:    json.Marshal,
-		JSONDecoder:    json.Unmarshal,
-		CaseSensitive:  true,
-		BodyLimit:      10 * 1024 * 1024,
-		ReadBufferSize: 10 * 1024 * 1024,
-	})
-	app.Use(restsrv.Cors(), restsrv.DeviceId(), restsrv.IpAddr())
-	routes.Auth(app, restsrv, s.app)
-	routes.Account(app, restsrv, s.app)
-	routes.Transaction(app, restsrv, s.app)
-	routes.MoneyTransfer(app, restsrv, s.app)
-	return app.Listen(fmt.Sprintf("%v:%v", configs.Http.Host, configs.Http.Port))
+
+	s.fiber.Use(s.srv.Cors(), s.srv.DeviceId(), s.srv.IpAddr())
+	routes.Auth(s.fiber, s.srv, s.app)
+	routes.Account(s.fiber, s.srv, s.app)
+	routes.Transaction(s.fiber, s.srv, s.app)
+	routes.MoneyTransfer(s.fiber, s.srv, s.app)
+	return s.fiber.Listen(fmt.Sprintf("%v:%v", configs.Http.Host, configs.Http.Port))
+}
+
+func (s srv) Shutdown(t time.Duration) error {
+	return s.fiber.ShutdownWithTimeout(t)
 }

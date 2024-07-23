@@ -3,6 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
+	"os"
+	"os/signal"
+	"time"
 
 	"github.com/9ssi7/banking/api/rest"
 	"github.com/9ssi7/banking/config"
@@ -54,11 +58,27 @@ func main() {
 
 	v := validation.New()
 
-	rest.New(app.App{
+	restHttp := rest.New(app.App{
 		Commands: commands.NewHandler(r, v),
 		Queries:  queries.NewHandler(r, v),
 		Services: services.NewHandler(),
-	}).Listen()
+	})
+
+	shutdownCh := make(chan os.Signal, 1)
+	signal.Notify(shutdownCh, os.Interrupt)
+
+	go func() {
+		<-shutdownCh
+		log.Println("restHttp is shutting down...")
+		timeout := 5 * time.Second
+		if err := restHttp.Shutdown(timeout); err != nil {
+			log.Printf("restHttp shutdown failed: %v", err)
+		}
+	}()
+
+	if err := restHttp.Listen(); err != nil {
+		log.Fatalf("restHttp Listen failed: %v", err)
+	}
 }
 
 func connectPostgres(cfg config.Database) (*gorm.DB, error) {
