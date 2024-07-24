@@ -28,7 +28,7 @@ func (r *accountRepo) Save(ctx context.Context, account *entities.Account) error
 	r.syncRepo.Lock()
 	defer r.syncRepo.Unlock()
 	if err := r.adapter.GetCurrent(ctx).Save(account).Error; err != nil {
-		return rescode.Failed
+		return rescode.Failed(err)
 	}
 	return nil
 }
@@ -38,14 +38,14 @@ func (r *accountRepo) ListByUserId(ctx context.Context, userId uuid.UUID, pagi *
 	query := r.adapter.GetCurrent(ctx).Model(&entities.Account{}).Where("user_id = ?", userId)
 	var total int64
 	if err := query.Count(&total).Error; err != nil {
-		return nil, rescode.Failed
+		return nil, rescode.Failed(err)
 	}
 	var filteredTotal int64
 	if err := query.Count(&filteredTotal).Error; err != nil {
-		return nil, rescode.Failed
+		return nil, rescode.Failed(err)
 	}
 	if err := query.Limit(*pagi.Limit).Offset(pagi.Offset()).Find(&accounts).Error; err != nil {
-		return nil, rescode.Failed
+		return nil, rescode.Failed(err)
 	}
 	return &list.PagiResponse[*entities.Account]{
 		List:          accounts,
@@ -61,9 +61,9 @@ func (r *accountRepo) FindByIbanAndOwner(ctx context.Context, iban string, owner
 	var account entities.Account
 	if err := r.adapter.GetCurrent(ctx).Model(&entities.Account{}).Where("iban = ? AND owner = ?", iban, owner).First(&account).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return nil, rescode.NotFound
+			return nil, rescode.NotFound(err)
 		}
-		return nil, rescode.Failed
+		return nil, rescode.Failed(err)
 	}
 	return &account, nil
 }
@@ -72,9 +72,9 @@ func (r *accountRepo) FindByUserIdAndId(ctx context.Context, userId uuid.UUID, i
 	var account entities.Account
 	if err := r.adapter.GetCurrent(ctx).Model(&entities.Account{}).Where("user_id = ? AND id = ?", userId, id).First(&account).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return nil, rescode.NotFound
+			return nil, rescode.NotFound(err)
 		}
-		return nil, rescode.Failed
+		return nil, rescode.Failed(err)
 	}
 	return &account, nil
 }
@@ -83,9 +83,9 @@ func (r *accountRepo) FindById(ctx context.Context, id uuid.UUID) (*entities.Acc
 	var account entities.Account
 	if err := r.adapter.GetCurrent(ctx).Model(&entities.Account{}).Where("id = ?", id).First(&account).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return nil, rescode.NotFound
+			return nil, rescode.NotFound(err)
 		}
-		return nil, rescode.Failed
+		return nil, rescode.Failed(err)
 	}
 	return &account, nil
 }

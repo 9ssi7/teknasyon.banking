@@ -2,6 +2,7 @@ package queries
 
 import (
 	"context"
+	"errors"
 
 	"github.com/9ssi7/banking/internal/domain/abstracts"
 	"github.com/9ssi7/banking/pkg/cqrs"
@@ -22,7 +23,7 @@ func NewAuthCheckHandler(verifyRepo abstracts.VerifyRepo) AuthCheckHandler {
 			return nil, err
 		}
 		if !exists {
-			return nil, rescode.NotFound
+			return nil, rescode.NotFound(errors.New("verify token not exists"))
 		}
 		return &cqrs.Empty{}, nil
 	}

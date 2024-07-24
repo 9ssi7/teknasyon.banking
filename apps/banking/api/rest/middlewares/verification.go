@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"errors"
 	"time"
 
 	"github.com/9ssi7/banking/config"
@@ -11,7 +12,7 @@ import (
 func VerifyRequired(ctx *fiber.Ctx) error {
 	token := ctx.Cookies("verify_token")
 	if token == "" {
-		return rescode.RequiredVerifyToken
+		return rescode.RequiredVerifyToken(errors.New("verify required"))
 	}
 	return ctx.Next()
 }
@@ -19,7 +20,7 @@ func VerifyRequired(ctx *fiber.Ctx) error {
 func VerifyExcluded(ctx *fiber.Ctx) error {
 	token := ctx.Cookies("verify_token")
 	if token != "" {
-		return rescode.ExcludedVerifyToken
+		return rescode.ExcludedVerifyToken(errors.New("verify excluded"))
 	}
 	return ctx.Next()
 }

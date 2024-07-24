@@ -28,13 +28,13 @@ func (s *sessionRepo) Save(ctx context.Context, userId uuid.UUID, session *aggre
 	key := s.calcKey(userId, session.DeviceId)
 	bytes, err := json.Marshal(session)
 	if err != nil {
-		return rescode.Failed
+		return rescode.Failed(err)
 	}
 	if err := s.checkExistAndDel(ctx, key); err != nil {
-		return rescode.Failed
+		return rescode.Failed(err)
 	}
 	if err := s.db.Set(ctx, key, bytes, 0).Err(); err != nil {
-		return rescode.Failed
+		return rescode.Failed(err)
 	}
 	return nil
 }
@@ -43,10 +43,10 @@ func (s *sessionRepo) FindByIds(ctx context.Context, userId uuid.UUID, deviceId 
 	key := s.calcKey(userId, deviceId)
 	e, _, err := s.getByKey(ctx, key)
 	if err != nil {
-		return nil, rescode.Failed
+		return nil, rescode.Failed(err)
 	}
 	if e == nil {
-		return nil, rescode.NotFound
+		return nil, rescode.NotFound(err)
 	}
 	return e, nil
 }
@@ -54,13 +54,13 @@ func (s *sessionRepo) FindByIds(ctx context.Context, userId uuid.UUID, deviceId 
 func (s *sessionRepo) FindAllByUserId(ctx context.Context, userId uuid.UUID) ([]*aggregates.Session, error) {
 	keys, err := s.db.Keys(ctx, s.calcKey(userId, "*")).Result()
 	if err != nil {
-		return nil, rescode.Failed
+		return nil, rescode.Failed(err)
 	}
 	entities := make([]*aggregates.Session, len(keys))
 	for i, k := range keys {
 		e, _, err := s.getByKey(ctx, k)
 		if err != nil {
-			return nil, rescode.Failed
+			return nil, rescode.Failed(err)
 		}
 		entities[i] = e
 	}
@@ -70,7 +70,7 @@ func (s *sessionRepo) FindAllByUserId(ctx context.Context, userId uuid.UUID) ([]
 func (s *sessionRepo) checkExistAndDel(ctx context.Context, key string) error {
 	exist, err := s.db.Exists(ctx, key).Result()
 	if err != nil {
-		return rescode.Failed
+		return rescode.Failed(err)
 	}
 	if exist == 1 {
 		return s.db.Del(ctx, key).Err()
@@ -85,11 +85,11 @@ func (s *sessionRepo) calcKey(userId uuid.UUID, deviceId string) string {
 func (s *sessionRepo) getByKey(ctx context.Context, key string) (*aggregates.Session, bool, error) {
 	res, err := s.db.Get(ctx, key).Result()
 	if err != nil {
-		return nil, true, rescode.Failed
+		return nil, true, rescode.Failed(err)
 	}
 	var e aggregates.Session
 	if err := json.Unmarshal([]byte(res), &e); err != nil {
-		return nil, false, rescode.Failed
+		return nil, false, rescode.Failed(err)
 	}
 	return &e, false, nil
 }
@@ -97,7 +97,7 @@ func (s *sessionRepo) getByKey(ctx context.Context, key string) (*aggregates.Ses
 func (s *sessionRepo) Destroy(ctx context.Context, userId uuid.UUID, deviceId string) error {
 	key := s.calcKey(userId, deviceId)
 	if err := s.db.Del(ctx, key).Err(); err != nil {
-		return rescode.Failed
+		return rescode.Failed(err)
 	}
 	return nil
 }

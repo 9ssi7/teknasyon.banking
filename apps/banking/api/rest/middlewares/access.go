@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"errors"
 	"time"
 
 	"github.com/9ssi7/banking/config"
@@ -15,7 +16,7 @@ func NewAccessRequired(isUnverified bool) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		u := c.Locals("user")
 		if u == nil || (!isUnverified && u.(*token.UserClaim).IsExpired()) || !u.(*token.UserClaim).IsAccess {
-			return rescode.Unauthorized
+			return rescode.Unauthorized(errors.New("access required"))
 		}
 		return c.Next()
 	}
@@ -26,7 +27,7 @@ func AccessExcluded(c *fiber.Ctx) error {
 	if u == nil || u.(*token.UserClaim).IsExpired() || !u.(*token.UserClaim).IsAccess {
 		return c.Next()
 	}
-	return rescode.InvalidAccess
+	return rescode.InvalidAccess(errors.New("access excluded"))
 }
 
 func NewAccessInitialize(app app.App, isUnverified bool) fiber.Handler {

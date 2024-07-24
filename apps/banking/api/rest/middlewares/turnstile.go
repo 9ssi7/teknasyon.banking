@@ -1,6 +1,8 @@
 package middlewares
 
 import (
+	"errors"
+
 	"github.com/9ssi7/banking/config"
 	"github.com/9ssi7/banking/pkg/rescode"
 	"github.com/9ssi7/turnstile"
@@ -19,10 +21,10 @@ func NewTurnstile() fiber.Handler {
 		token := ctx.Get("X-Turnstile-Token")
 		ok, err := srv.Verify(ctx.UserContext(), token, ip)
 		if err != nil {
-			return rescode.RecaptchaFailed
+			return rescode.RecaptchaFailed(err)
 		}
 		if !ok {
-			return rescode.RecaptchaRequired
+			return rescode.RecaptchaRequired(errors.New("recaptcha required"))
 		}
 		return ctx.Next()
 	}

@@ -27,10 +27,10 @@ func (r *verifyRepo) Save(ctx context.Context, token string, verify *aggregates.
 	defer r.syncRepo.Unlock()
 	b, err := json.Marshal(verify)
 	if err != nil {
-		return rescode.Failed
+		return rescode.Failed(err)
 	}
 	if err = r.db.SetEx(ctx, r.calcKey(verify.DeviceId, token), b, 5*time.Minute).Err(); err != nil {
-		return rescode.Failed
+		return rescode.Failed(err)
 	}
 	return nil
 }
@@ -38,7 +38,7 @@ func (r *verifyRepo) Save(ctx context.Context, token string, verify *aggregates.
 func (r *verifyRepo) IsExists(ctx context.Context, token string, deviceId string) (bool, error) {
 	res, err := r.db.Get(ctx, r.calcKey(deviceId, token)).Result()
 	if err != nil {
-		return false, rescode.Failed
+		return false, rescode.Failed(err)
 	}
 	return res != "", nil
 }
@@ -46,18 +46,18 @@ func (r *verifyRepo) IsExists(ctx context.Context, token string, deviceId string
 func (r *verifyRepo) Find(ctx context.Context, token string, deviceId string) (*aggregates.Verify, error) {
 	res, err := r.db.Get(ctx, r.calcKey(deviceId, token)).Result()
 	if err != nil {
-		return nil, rescode.Failed
+		return nil, rescode.Failed(err)
 	}
 	var e aggregates.Verify
 	if err = json.Unmarshal([]byte(res), &e); err != nil {
-		return nil, rescode.Failed
+		return nil, rescode.Failed(err)
 	}
 	return &e, nil
 }
 
 func (r *verifyRepo) Delete(ctx context.Context, token string, deviceId string) error {
 	if err := r.db.Del(ctx, r.calcKey(deviceId, token)).Err(); err != nil {
-		return rescode.Failed
+		return rescode.Failed(err)
 	}
 	return nil
 }

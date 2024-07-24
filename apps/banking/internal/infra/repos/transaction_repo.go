@@ -29,7 +29,7 @@ func (r *transactionRepo) Save(ctx context.Context, transaction *entities.Transa
 	r.syncRepo.Lock()
 	defer r.syncRepo.Unlock()
 	if err := r.adapter.GetCurrent(ctx).Save(transaction).Error; err != nil {
-		return rescode.Failed
+		return rescode.Failed(err)
 	}
 	return nil
 }
@@ -39,7 +39,7 @@ func (r *transactionRepo) Filter(ctx context.Context, accountId uuid.UUID, pagi 
 	query := r.adapter.GetCurrent(ctx).Model(&entities.Transaction{}).Where("sender_id = ? OR receiver_id = ?", accountId, accountId)
 	var total int64
 	if err := query.Count(&total).Error; err != nil {
-		return nil, rescode.Failed
+		return nil, rescode.Failed(err)
 	}
 	if filters.StartDate != "" {
 		query = query.Where("created_at >= ?", filters.StartDate)
@@ -52,10 +52,10 @@ func (r *transactionRepo) Filter(ctx context.Context, accountId uuid.UUID, pagi 
 	}
 	var filteredTotal int64
 	if err := query.Count(&filteredTotal).Error; err != nil {
-		return nil, rescode.Failed
+		return nil, rescode.Failed(err)
 	}
 	if err := query.Limit(*pagi.Limit).Offset(pagi.Offset()).Find(&transactions).Error; err != nil {
-		return nil, rescode.Failed
+		return nil, rescode.Failed(err)
 	}
 	return &list.PagiResponse[*entities.Transaction]{
 		List:          transactions,

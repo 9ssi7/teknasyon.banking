@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"errors"
 
 	"github.com/9ssi7/banking/internal/domain/abstracts"
 	"github.com/9ssi7/banking/pkg/cqrs"
@@ -31,7 +32,7 @@ func NewAuthRefreshHandler(sessionRepo abstracts.SessionRepo, userRepo abstracts
 			return nil, err
 		}
 		if !session.IsRefreshValid(cmd.AccessToken, cmd.RefreshToken, cmd.IpAddress) {
-			return nil, rescode.InvalidRefreshOrAccessTokens
+			return nil, rescode.InvalidRefreshOrAccessTokens(errors.New("invalid refresh with access token and ip"))
 		}
 		user, err := userRepo.FindById(ctx, cmd.UserId)
 		if err != nil {

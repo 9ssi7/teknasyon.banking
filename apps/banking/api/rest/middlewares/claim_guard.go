@@ -1,6 +1,8 @@
 package middlewares
 
 import (
+	"errors"
+
 	"github.com/9ssi7/banking/pkg/claguard"
 	"github.com/9ssi7/banking/pkg/rescode"
 	"github.com/gofiber/fiber/v2"
@@ -16,6 +18,6 @@ func NewClaimGuard(claims []string) fiber.Handler {
 		if claguard.Check(u.Roles, claims) {
 			return ctx.Next()
 		}
-		return rescode.PermissionDenied
+		return rescode.PermissionDenied(errors.New("permission denied"))
 	}
 }

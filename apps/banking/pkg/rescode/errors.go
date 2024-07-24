@@ -3,115 +3,40 @@ package rescode
 import "net/http"
 
 var (
-	Failed   = New(codeFailed, msgFailed, nil)
-	NotFound = New(codeNotFound, msgNotFound, nil, Extra{
-		HttpStatus:    http.StatusNotFound,
-		Translateable: true,
-	})
-	UserDisabled = New(codeUserDisabled, msgUserDisabled, nil, Extra{
-		HttpStatus:    http.StatusForbidden,
-		Translateable: true,
-	})
-	UserVerifyRequired = New(codeUserVerifyRequired, msgUserVerifyRequired, nil, Extra{
-		HttpStatus:    http.StatusForbidden,
-		Translateable: true,
-	})
-	EmailAlreadyExists = New(codeEmailAlreadyExists, msgEmailAlreadyExists, map[string]interface{}{
+	Failed             = New(codeFailed, http.StatusInternalServerError, msgFailed)
+	NotFound           = New(codeNotFound, http.StatusNotFound, msgNotFound)
+	ValidationFailed   = New(codeValidationFailed, http.StatusUnprocessableEntity, msgValidationFailed)
+	UserDisabled       = New(codeUserDisabled, http.StatusForbidden, msgUserDisabled)
+	UserVerifyRequired = New(codeUserVerifyRequired, http.StatusForbidden, msgUserVerifyRequired)
+	EmailAlreadyExists = New(codeEmailAlreadyExists, http.StatusConflict, msgEmailAlreadyExists, R{
 		"isExists": true,
-	}, Extra{
-		HttpStatus:    http.StatusConflict,
-		Translateable: true,
 	})
-	VerificationExpired = New(codeVerificationExpired, msgVerificationExpired, map[string]interface{}{
+	VerificationExpired = New(codeVerificationExpired, http.StatusForbidden, msgVerificationExpired, R{
 		"isExpired": true,
-	}, Extra{
-		HttpStatus:    http.StatusForbidden,
-		Translateable: true,
 	})
-	VerificationExceeded = New(codeVerificationExceeded, MsfVerificationExceeded, map[string]interface{}{
+	VerificationExceeded = New(codeVerificationExceeded, http.StatusForbidden, MsfVerificationExceeded, R{
 		"isExceeded": true,
-	}, Extra{
-		HttpStatus:    http.StatusForbidden,
-		Translateable: true,
 	})
-	VerificationInvalid = New(codeVerificationInvalid, msgVerificationInvalid, map[string]interface{}{
+	VerificationInvalid = New(codeVerificationInvalid, http.StatusForbidden, msgVerificationInvalid, R{
 		"isInvalid": true,
-	}, Extra{
-		HttpStatus:    http.StatusForbidden,
-		Translateable: true,
 	})
-	InvalidRefreshOrAccessTokens = New(codeInvalidRefreshOrAccessTokens, msgInvalidRefreshOrAccessTokens, nil, Extra{
-		HttpStatus:    http.StatusForbidden,
-		Translateable: true,
-	})
-	InvalidOrExpiredToken = New(codeInvalidOrExpiredToken, msgInvalidOrExpiredToken, map[string]interface{}{
+	InvalidRefreshOrAccessTokens = New(codeInvalidRefreshOrAccessTokens, http.StatusForbidden, msgInvalidRefreshOrAccessTokens)
+	InvalidOrExpiredToken        = New(codeInvalidOrExpiredToken, http.StatusForbidden, msgInvalidOrExpiredToken, R{
 		"isExpired": true,
-	}, Extra{
-		HttpStatus:    http.StatusForbidden,
-		Translateable: true,
 	})
-	InvalidAccess = New(codeInvalidAccess, msgInvalidAccess, nil, Extra{
-		HttpStatus:    http.StatusForbidden,
-		Translateable: true,
-	})
-	InvalidRefreshToken = New(codeInvalidRefreshToken, msgInvalidRefreshToken, nil, Extra{
-		HttpStatus:    http.StatusForbidden,
-		Translateable: true,
-	})
-	RequiredVerifyToken = New(codeRequiredVerifyToken, msgRequiredVerifyToken, nil, Extra{
-		HttpStatus:    http.StatusForbidden,
-		Translateable: true,
-	})
-	ExcludedVerifyToken = New(codeExcludedVerifyToken, msgExcludedVerifyToken, nil, Extra{
-		HttpStatus:    http.StatusForbidden,
-		Translateable: true,
-	})
-	Unauthorized = New(codeUnauthorized, msgUnauthorized, nil, Extra{
-		HttpStatus:    http.StatusUnauthorized,
-		Translateable: true,
-	})
-	PermissionDenied = New(codePermissionDenied, msgPermissionDenied, nil, Extra{
-		HttpStatus:    http.StatusForbidden,
-		Translateable: true,
-	})
-	RecaptchaFailed = New(codeRecaptchaFailed, msgRecaptchaFailed, nil, Extra{
-		HttpStatus:    http.StatusForbidden,
-		Translateable: true,
-	})
-	RecaptchaRequired = New(codeRecaptchaRequired, msgRecaptchaRequired, nil, Extra{
-		HttpStatus:    http.StatusForbidden,
-		Translateable: true,
-	})
+	InvalidAccess       = New(codeInvalidAccess, http.StatusForbidden, msgInvalidAccess)
+	InvalidRefreshToken = New(codeInvalidRefreshToken, http.StatusForbidden, msgInvalidRefreshToken)
+	RequiredVerifyToken = New(codeRequiredVerifyToken, http.StatusForbidden, msgRequiredVerifyToken)
+	ExcludedVerifyToken = New(codeExcludedVerifyToken, http.StatusForbidden, msgExcludedVerifyToken)
+	Unauthorized        = New(codeUnauthorized, http.StatusUnauthorized, msgUnauthorized)
+	PermissionDenied    = New(codePermissionDenied, http.StatusForbidden, msgPermissionDenied)
+	RecaptchaFailed     = New(codeRecaptchaFailed, http.StatusForbidden, msgRecaptchaFailed)
+	RecaptchaRequired   = New(codeRecaptchaRequired, http.StatusForbidden, msgRecaptchaRequired)
 
-	AccountBalanceInsufficient = New(codeAccountBalanceInsufficient, msgAccountBalanceInsufficient, nil, Extra{
-		HttpStatus:    http.StatusBadRequest,
-		Translateable: true,
-	})
-	AccountNotAvailable = New(codeAccountNotAvailable, msgAccountNotAvailable, nil, Extra{
-		HttpStatus:    http.StatusBadRequest,
-		Translateable: true,
-	})
-	ToAccountNotAvailable = New(codeToAccountNotAvailable, msgToAccountNotAvailable, nil, Extra{
-		HttpStatus:    http.StatusBadRequest,
-		Translateable: true,
-	})
-	AccountNotFound = New(codeAccountNotFound, msgAccountNotFound, nil, Extra{
-		HttpStatus:    http.StatusNotFound,
-		Translateable: true,
-	})
-	AccountTransferToSameAccount = New(codeAccountTransferToSameAccount, msgAccountTransferToSameAccount, nil, Extra{
-		HttpStatus:    http.StatusBadRequest,
-		Translateable: true,
-	})
-	AccountCurrencyMismatch = New(codeAccountCurrencyMismatch, msgAccountCurrencyMismatch, nil, Extra{
-		HttpStatus:    http.StatusBadRequest,
-		Translateable: true,
-	})
+	AccountBalanceInsufficient   = New(codeAccountBalanceInsufficient, http.StatusBadRequest, msgAccountBalanceInsufficient)
+	AccountNotAvailable          = New(codeAccountNotAvailable, http.StatusBadRequest, msgAccountNotAvailable)
+	ToAccountNotAvailable        = New(codeToAccountNotAvailable, http.StatusBadRequest, msgToAccountNotAvailable)
+	AccountNotFound              = New(codeAccountNotFound, http.StatusNotFound, msgAccountNotFound)
+	AccountTransferToSameAccount = New(codeAccountTransferToSameAccount, http.StatusBadRequest, msgAccountTransferToSameAccount)
+	AccountCurrencyMismatch      = New(codeAccountCurrencyMismatch, http.StatusBadRequest, msgAccountCurrencyMismatch)
 )
-
-func ValidationFailed(data interface{}) *RC {
-	return New(codeValidationFailed, msgValidationFailed, data, Extra{
-		HttpStatus:    http.StatusUnprocessableEntity,
-		Translateable: true,
-	})
-}
