@@ -12,6 +12,7 @@ import (
 )
 
 type accountRepo struct {
+	syncRepo
 	txnGormRepo
 	db *gorm.DB
 }
@@ -24,6 +25,8 @@ func NewAccountRepo(db *gorm.DB) abstracts.AccountRepo {
 }
 
 func (r *accountRepo) Save(ctx context.Context, account *entities.Account) error {
+	r.syncRepo.Lock()
+	defer r.syncRepo.Unlock()
 	if err := r.adapter.GetCurrent(ctx).Save(account).Error; err != nil {
 		return rescode.Failed
 	}

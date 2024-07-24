@@ -13,6 +13,7 @@ import (
 )
 
 type transactionRepo struct {
+	syncRepo
 	txnGormRepo
 	db *gorm.DB
 }
@@ -25,6 +26,8 @@ func NewTransactionRepo(db *gorm.DB) abstracts.TransactionRepo {
 }
 
 func (r *transactionRepo) Save(ctx context.Context, transaction *entities.Transaction) error {
+	r.syncRepo.Lock()
+	defer r.syncRepo.Unlock()
 	if err := r.adapter.GetCurrent(ctx).Save(transaction).Error; err != nil {
 		return rescode.Failed
 	}
