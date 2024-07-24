@@ -40,7 +40,7 @@ type Http struct {
 	Debug bool   `env:"HTTP_DEBUG" envDefault:"true"`
 }
 
-type KeyValueDb struct {
+type RedisDb struct {
 	Host string `env:"KV_DB_HOST"`
 	Port string `env:"KV_DB_PORT"`
 	Pw   string `env:"KV_DB_PASSWORD"`
@@ -86,7 +86,7 @@ type App struct {
 	Database    Database
 	I18n        I18n
 	Http        Http
-	KeyValueDb  KeyValueDb
+	RedisDb     RedisDb
 	HttpHeaders HttpHeaders
 	TokenSrv    TokenSrv
 	RSA         RSA
