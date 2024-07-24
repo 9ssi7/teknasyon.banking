@@ -15,6 +15,7 @@ import (
 	"github.com/9ssi7/txn"
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type MoneyTranfer struct {
@@ -30,8 +31,10 @@ type MoneyTranfer struct {
 
 type MoneyTransferHandler cqrs.HandlerFunc[MoneyTranfer, *cqrs.Empty]
 
-func NewMoneyTransferHandler(v validation.Service, userRepo abstracts.UserRepo, accountRepo abstracts.AccountRepo, transactionRepo abstracts.TransactionRepo) MoneyTransferHandler {
+func NewMoneyTransferHandler(tracer trace.Tracer, v validation.Service, userRepo abstracts.UserRepo, accountRepo abstracts.AccountRepo, transactionRepo abstracts.TransactionRepo) MoneyTransferHandler {
 	return func(ctx context.Context, cmd MoneyTranfer) (*cqrs.Empty, error) {
+		ctx, span := tracer.Start(ctx, "MoneyTransferHandler")
+		defer span.End()
 		if err := v.ValidateStruct(ctx, cmd); err != nil {
 			return nil, err
 		}

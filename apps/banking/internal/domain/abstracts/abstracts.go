@@ -46,7 +46,7 @@ type TransactionRepo interface {
 
 type SessionRepo interface {
 	Save(ctx context.Context, userId uuid.UUID, session *aggregates.Session) error
-	FindByIds(ctx context.Context, userId uuid.UUID, deviceId string) (*aggregates.Session, error)
+	FindByIds(ctx context.Context, userId uuid.UUID, deviceId string) (*aggregates.Session, bool, error)
 	FindAllByUserId(ctx context.Context, userId uuid.UUID) ([]*aggregates.Session, error)
 	Destroy(ctx context.Context, userId uuid.UUID, deviceId string) error
 }

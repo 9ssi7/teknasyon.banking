@@ -10,6 +10,7 @@ import (
 	"github.com/9ssi7/banking/pkg/cqrs"
 	"github.com/9ssi7/banking/pkg/rescode"
 	"github.com/9ssi7/banking/pkg/validation"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type AuthRegister struct {
@@ -19,8 +20,10 @@ type AuthRegister struct {
 
 type AuthRegisterHandler cqrs.HandlerFunc[AuthRegister, *cqrs.Empty]
 
-func NewAuthRegisterHandler(v validation.Service, userRepo abstracts.UserRepo) AuthRegisterHandler {
+func NewAuthRegisterHandler(tracer trace.Tracer, v validation.Service, userRepo abstracts.UserRepo) AuthRegisterHandler {
 	return func(ctx context.Context, cmd AuthRegister) (*cqrs.Empty, error) {
+		ctx, span := tracer.Start(ctx, "AuthRegisterHandler")
+		defer span.End()
 		err := v.ValidateStruct(ctx, cmd)
 		if err != nil {
 			return nil, err

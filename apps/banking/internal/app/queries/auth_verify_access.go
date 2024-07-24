@@ -9,6 +9,7 @@ import (
 	"github.com/9ssi7/banking/pkg/rescode"
 	"github.com/9ssi7/banking/pkg/state"
 	"github.com/9ssi7/banking/pkg/token"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type AuthVerifyAccess struct {
@@ -23,8 +24,10 @@ type AuthVerifyAccessRes struct {
 
 type AuthVerifyAccessHandler cqrs.HandlerFunc[AuthVerifyAccess, *AuthVerifyAccessRes]
 
-func NewAuthVerifyAccessHandler(sessionRepo abstracts.SessionRepo) AuthVerifyAccessHandler {
+func NewAuthVerifyAccessHandler(tracer trace.Tracer, sessionRepo abstracts.SessionRepo) AuthVerifyAccessHandler {
 	return func(ctx context.Context, query AuthVerifyAccess) (*AuthVerifyAccessRes, error) {
+		ctx, span := tracer.Start(ctx, "AuthVerifyAccessHandler")
+		defer span.End()
 		var claims *token.UserClaim
 		var err error
 		if query.IsUnverified {
@@ -35,9 +38,12 @@ func NewAuthVerifyAccessHandler(sessionRepo abstracts.SessionRepo) AuthVerifyAcc
 		if err != nil {
 			return nil, rescode.Failed(err)
 		}
-		session, err := sessionRepo.FindByIds(ctx, claims.Id, state.GetDeviceId(ctx))
+		session, notExists, err := sessionRepo.FindByIds(ctx, claims.Id, state.GetDeviceId(ctx))
 		if err != nil {
 			return nil, err
+		}
+		if notExists {
+			return nil, rescode.InvalidAccess(errors.New("invalid access with token and ip"))
 		}
 		if !session.IsAccessValid(query.AccessToken, query.IpAddr) {
 			return nil, rescode.InvalidAccess(errors.New("invalid access with token and ip"))

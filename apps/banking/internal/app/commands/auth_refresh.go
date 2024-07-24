@@ -10,6 +10,7 @@ import (
 	"github.com/9ssi7/banking/pkg/state"
 	"github.com/9ssi7/banking/pkg/token"
 	"github.com/google/uuid"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type AuthRefresh struct {
@@ -25,11 +26,16 @@ type AuthRefreshRes struct {
 
 type AuthRefreshHandler cqrs.HandlerFunc[AuthRefresh, *AuthRefreshRes]
 
-func NewAuthRefreshHandler(sessionRepo abstracts.SessionRepo, userRepo abstracts.UserRepo) AuthRefreshHandler {
+func NewAuthRefreshHandler(tracer trace.Tracer, sessionRepo abstracts.SessionRepo, userRepo abstracts.UserRepo) AuthRefreshHandler {
 	return func(ctx context.Context, cmd AuthRefresh) (*AuthRefreshRes, error) {
-		session, err := sessionRepo.FindByIds(ctx, cmd.UserId, state.GetDeviceId(ctx))
+		ctx, span := tracer.Start(ctx, "AuthRefreshHandler")
+		defer span.End()
+		session, notFound, err := sessionRepo.FindByIds(ctx, cmd.UserId, state.GetDeviceId(ctx))
 		if err != nil {
 			return nil, err
+		}
+		if notFound {
+			return nil, rescode.InvalidRefreshOrAccessTokens(errors.New("invalid refresh with access token and ip"))
 		}
 		if !session.IsRefreshValid(cmd.AccessToken, cmd.RefreshToken, cmd.IpAddress) {
 			return nil, rescode.InvalidRefreshOrAccessTokens(errors.New("invalid refresh with access token and ip"))

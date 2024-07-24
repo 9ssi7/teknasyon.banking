@@ -9,6 +9,7 @@ import (
 	"github.com/9ssi7/banking/pkg/rescode"
 	"github.com/9ssi7/banking/pkg/state"
 	"github.com/9ssi7/banking/pkg/token"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type AuthVerifyRefresh struct {
@@ -23,8 +24,10 @@ type AuthVerifyRefreshRes struct {
 
 type AuthVerifyRefreshHandler cqrs.HandlerFunc[AuthVerifyRefresh, *AuthVerifyRefreshRes]
 
-func NewAuthVerifyRefreshHandler(sessionRepo abstracts.SessionRepo) AuthVerifyRefreshHandler {
+func NewAuthVerifyRefreshHandler(tracer trace.Tracer, sessionRepo abstracts.SessionRepo) AuthVerifyRefreshHandler {
 	return func(ctx context.Context, query AuthVerifyRefresh) (*AuthVerifyRefreshRes, error) {
+		ctx, span := tracer.Start(ctx, "AuthVerifyRefreshHandler")
+		defer span.End()
 		claims, err := token.Client().Parse(query.RefreshToken)
 		if err != nil {
 			return nil, rescode.Failed(err)
@@ -36,9 +39,12 @@ func NewAuthVerifyRefreshHandler(sessionRepo abstracts.SessionRepo) AuthVerifyRe
 		if !isValid {
 			return nil, rescode.InvalidOrExpiredToken(errors.New("invalid or expired refresh token"))
 		}
-		session, err := sessionRepo.FindByIds(ctx, claims.Id, state.GetDeviceId(ctx))
+		session, notFound, err := sessionRepo.FindByIds(ctx, claims.Id, state.GetDeviceId(ctx))
 		if err != nil {
 			return nil, err
+		}
+		if notFound {
+			return nil, rescode.InvalidRefreshToken(errors.New("invalid refresh with access token and ip"))
 		}
 		if !session.IsRefreshValid(query.AccessToken, query.RefreshToken, query.IpAddr) {
 			return nil, rescode.InvalidRefreshToken(errors.New("invalid refresh with access token and ip"))

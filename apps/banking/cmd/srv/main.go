@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"sync"
 	"time"
 
 	"github.com/9ssi7/banking/api/rest"
@@ -17,9 +16,12 @@ import (
 	"github.com/9ssi7/banking/internal/app/services"
 	"github.com/9ssi7/banking/internal/domain/abstracts"
 	"github.com/redis/go-redis/v9"
+	"github.com/uptrace/opentelemetry-go-extra/otelgorm"
+	"go.opentelemetry.io/otel"
 
 	"github.com/9ssi7/banking/internal/infra/db/migrations"
 	"github.com/9ssi7/banking/internal/infra/db/seeds"
+	"github.com/9ssi7/banking/internal/infra/observer"
 	"github.com/9ssi7/banking/internal/infra/repos"
 	"github.com/9ssi7/banking/pkg/retry"
 	"github.com/9ssi7/banking/pkg/timeouter"
@@ -32,46 +34,62 @@ import (
 var (
 	pgdb     *gorm.DB
 	rdclient *redis.Client
-	once     sync.Once
 	reps     abstracts.Repositories
 	valSrv   validation.Service
+	obsrvr   observer.Service
 )
 
 func init() {
-	once.Do(func() {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		cnf := config.ReadValue()
-		token.Init()
-		if err := connectPostgres(ctx, cnf.Database); err != nil {
-			panic(err)
-		}
-		if err := connectRedis(ctx, cnf.RedisDb); err != nil {
-			panic(err)
-		}
-		if cnf.Database.Migrate {
-			migrations.Run(pgdb)
-		}
-		if cnf.Database.Seed {
-			seeds.Run(pgdb)
-		}
-		reps = abstracts.Repositories{
-			UserRepo:        repos.NewUserRepo(pgdb),
-			AccountRepo:     repos.NewAccountRepo(pgdb),
-			TransactionRepo: repos.NewTransactionRepo(pgdb),
-			SessionRepo:     repos.NewSessionRepo(rdclient),
-			VerifyRepo:      repos.NewVerifyRepo(rdclient),
-		}
-
-		valSrv = validation.New()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	cnf := config.ReadValue()
+	token.Init()
+	obsrvr = observer.New(observer.Config{
+		Name:     cnf.Observer.Name,
+		Endpoint: cnf.Observer.Endpoint,
+		UseSSL:   cnf.Observer.UseSSL,
 	})
+	if err := obsrvr.Init(ctx); err != nil {
+		panic(err)
+	}
+	if err := connectPostgres(ctx, cnf.Database); err != nil {
+		panic(err)
+	}
+	plugin := otelgorm.NewPlugin(otelgorm.WithTracerProvider(otel.GetTracerProvider()))
+	if err := pgdb.Use(plugin); err != nil {
+		panic(err)
+	}
+	if err := connectRedis(ctx, cnf.RedisDb); err != nil {
+		panic(err)
+	}
+	if cnf.Database.Migrate {
+		migrations.Run(pgdb)
+	}
+	if cnf.Database.Seed {
+		seeds.Run(pgdb)
+	}
+	reps = abstracts.Repositories{
+		UserRepo:        repos.NewUserRepo(pgdb),
+		AccountRepo:     repos.NewAccountRepo(pgdb),
+		TransactionRepo: repos.NewTransactionRepo(pgdb),
+		SessionRepo:     repos.NewSessionRepo(rdclient),
+		VerifyRepo:      repos.NewVerifyRepo(rdclient),
+	}
+
+	valSrv = validation.New()
 }
 
 func main() {
-	restHttp := rest.New(app.App{
-		Commands: commands.NewHandler(reps, valSrv),
-		Queries:  queries.NewHandler(reps, valSrv),
+	tracer := obsrvr.GetTracer()
+	a := app.App{
+		Commands: commands.NewHandler(tracer, reps, valSrv),
+		Queries:  queries.NewHandler(tracer, reps, valSrv),
 		Services: services.NewHandler(),
+	}
+	restHttp := rest.New(rest.Config{
+		App:    a,
+		Meter:  obsrvr.GetMeter(),
+		Tracer: tracer,
 	})
 
 	shutdownCh := make(chan os.Signal, 1)
@@ -91,6 +109,9 @@ func main() {
 		}
 		if err := disconnectRedis(ctx); err != nil {
 			log.Printf("rdb close failed: %v", err)
+		}
+		if err := obsrvr.Shutdown(ctx); err != nil {
+			log.Printf("obsrvr shutdown failed: %v", err)
 		}
 	}()
 
@@ -134,7 +155,9 @@ func connectRedis(ctx context.Context, cfg config.RedisDb) error {
 		DB:       cfg.Db,
 	})
 	return retry.Run(func() error {
+		fmt.Println("connecting to redis...")
 		return timeouter.Run(ctx, func() error {
+			fmt.Println("pinging redis...")
 			return rdclient.Ping(ctx).Err()
 		})
 	}, retry.DefaultConfig)

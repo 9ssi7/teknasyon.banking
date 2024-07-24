@@ -8,6 +8,7 @@ import (
 	"github.com/9ssi7/banking/pkg/cqrs"
 	"github.com/9ssi7/banking/pkg/rescode"
 	"github.com/9ssi7/banking/pkg/state"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type AuthCheck struct {
@@ -16,8 +17,10 @@ type AuthCheck struct {
 
 type AuthCheckHandler cqrs.HandlerFunc[AuthCheck, *cqrs.Empty]
 
-func NewAuthCheckHandler(verifyRepo abstracts.VerifyRepo) AuthCheckHandler {
+func NewAuthCheckHandler(tracer trace.Tracer, verifyRepo abstracts.VerifyRepo) AuthCheckHandler {
 	return func(ctx context.Context, query AuthCheck) (*cqrs.Empty, error) {
+		ctx, span := tracer.Start(ctx, "AuthCheckHandler")
+		defer span.End()
 		exists, err := verifyRepo.IsExists(ctx, query.VerifyToken, state.GetDeviceId(ctx))
 		if err != nil {
 			return nil, err

@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"fmt"
+
 	"github.com/9ssi7/banking/api/rest/middlewares"
 	restsrv "github.com/9ssi7/banking/api/rest/srv"
 	"github.com/9ssi7/banking/internal/app"
@@ -118,6 +120,7 @@ func authStart(srv restsrv.Srv, app app.App) fiber.Handler {
 
 func authCheck(app app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		fmt.Println("authCheck")
 		query := queries.AuthCheck{
 			VerifyToken: middlewares.VerifyTokenParse(c),
 		}

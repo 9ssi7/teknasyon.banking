@@ -7,6 +7,7 @@ import (
 	"github.com/9ssi7/banking/pkg/cqrs"
 	"github.com/9ssi7/banking/pkg/validation"
 	"github.com/google/uuid"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type AccountActivate struct {
@@ -16,8 +17,10 @@ type AccountActivate struct {
 
 type AccountActivateHandler cqrs.HandlerFunc[AccountActivate, *cqrs.Empty]
 
-func NewAccountActivateHandler(v validation.Service, accountRepo abstracts.AccountRepo) AccountActivateHandler {
+func NewAccountActivateHandler(tracer trace.Tracer, v validation.Service, accountRepo abstracts.AccountRepo) AccountActivateHandler {
 	return func(ctx context.Context, cmd AccountActivate) (*cqrs.Empty, error) {
+		ctx, span := tracer.Start(ctx, "AccountActivateHandler")
+		defer span.End()
 		if err := v.ValidateStruct(ctx, cmd); err != nil {
 			return nil, err
 		}
