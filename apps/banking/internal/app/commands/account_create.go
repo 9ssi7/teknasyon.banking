@@ -9,6 +9,7 @@ import (
 	"github.com/9ssi7/banking/pkg/currency"
 	"github.com/9ssi7/banking/pkg/validation"
 	"github.com/google/uuid"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type AccountCreate struct {
@@ -20,8 +21,10 @@ type AccountCreate struct {
 
 type AccountCreateHandler cqrs.HandlerFunc[AccountCreate, *uuid.UUID]
 
-func NewAccountCreateHandler(v validation.Service, accountRepo abstracts.AccountRepo) AccountCreateHandler {
+func NewAccountCreateHandler(tracer trace.Tracer, v validation.Service, accountRepo abstracts.AccountRepo) AccountCreateHandler {
 	return func(ctx context.Context, cmd AccountCreate) (*uuid.UUID, error) {
+		ctx, span := tracer.Start(ctx, "AccountCreateHandler")
+		defer span.End()
 		if err := v.ValidateStruct(ctx, cmd); err != nil {
 			return nil, err
 		}

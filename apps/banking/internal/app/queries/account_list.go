@@ -8,6 +8,7 @@ import (
 	"github.com/9ssi7/banking/pkg/cqrs"
 	"github.com/9ssi7/banking/pkg/list"
 	"github.com/google/uuid"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type AccountList struct {
@@ -17,8 +18,10 @@ type AccountList struct {
 
 type AccountListHandler cqrs.HandlerFunc[AccountList, *list.PagiResponse[*dtos.AccountListDto]]
 
-func NewAccountListHandler(accountRepo abstracts.AccountRepo) AccountListHandler {
+func NewAccountListHandler(tracer trace.Tracer, accountRepo abstracts.AccountRepo) AccountListHandler {
 	return func(ctx context.Context, query AccountList) (*list.PagiResponse[*dtos.AccountListDto], error) {
+		ctx, span := tracer.Start(ctx, "AccountListHandler")
+		defer span.End()
 		res, err := accountRepo.ListByUserId(ctx, query.UserId, &query.Pagi)
 		if err != nil {
 			return nil, err

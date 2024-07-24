@@ -10,6 +10,7 @@ import (
 	"github.com/9ssi7/banking/pkg/list"
 	"github.com/9ssi7/banking/pkg/validation"
 	"github.com/google/uuid"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type TransactionList struct {
@@ -21,8 +22,10 @@ type TransactionList struct {
 
 type TransactionListHandler cqrs.HandlerFunc[TransactionList, *list.PagiResponse[*dtos.TransactionListDto]]
 
-func NewTransactionListHandler(v validation.Service, transactionRepo abstracts.TransactionRepo, accountRepo abstracts.AccountRepo) TransactionListHandler {
+func NewTransactionListHandler(tracer trace.Tracer, v validation.Service, transactionRepo abstracts.TransactionRepo, accountRepo abstracts.AccountRepo) TransactionListHandler {
 	return func(ctx context.Context, query TransactionList) (*list.PagiResponse[*dtos.TransactionListDto], error) {
+		ctx, span := tracer.Start(ctx, "TransactionListHandler")
+		defer span.End()
 		if err := v.ValidateStruct(ctx, query); err != nil {
 			return nil, err
 		}

@@ -71,6 +71,13 @@ type Turnstile struct {
 	Skip   bool   `env:"CF_TURNSTILE_SKIP" envDefault:"false"`
 }
 
+type Observer struct {
+	Endpoint       string `env:"OBSERVER_ENDPOINT"`
+	TracesEndpoint string `env:"OBSERVER_TRACES_ENDPOINT"`
+	UseSSL         bool   `env:"OBSERVER_USE_SSL" envDefault:"false"`
+	Name           string `env:"OBSERVER_NAME"`
+}
+
 var IsDevelopment bool = false
 
 type App struct {
@@ -82,6 +89,7 @@ type App struct {
 		// Sms  Sms
 		// Push Push
 	}
+	Observer    Observer
 	Turnstile   Turnstile
 	Database    Database
 	I18n        I18n

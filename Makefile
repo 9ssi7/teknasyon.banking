@@ -10,10 +10,13 @@ env:
 	cp ./config/.env.example ./config/.env
 
 temp:
-	mkdir temp && mkdir temp/db && mkdir temp/kv
+	mkdir temp && mkdir temp/db && mkdir temp/kv && mkdir temp/grafana
 
 compose:
 	docker-compose -f ./config/docker-compose.yml up -d
+
+compose-build:
+	docker-compose -f ./config/docker-compose.yml up -d --build --remove-orphans
 
 compose-down:
 	docker-compose -f ./config/docker-compose.yml down

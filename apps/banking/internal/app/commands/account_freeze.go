@@ -7,6 +7,7 @@ import (
 	"github.com/9ssi7/banking/pkg/cqrs"
 	"github.com/9ssi7/banking/pkg/validation"
 	"github.com/google/uuid"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type AccountFreeze struct {
@@ -16,8 +17,10 @@ type AccountFreeze struct {
 
 type AccountFreezeHandler cqrs.HandlerFunc[AccountFreeze, *cqrs.Empty]
 
-func NewAccountFreezeHandler(v validation.Service, accountRepo abstracts.AccountRepo) AccountFreezeHandler {
+func NewAccountFreezeHandler(tracer trace.Tracer, v validation.Service, accountRepo abstracts.AccountRepo) AccountFreezeHandler {
 	return func(ctx context.Context, cmd AccountFreeze) (*cqrs.Empty, error) {
+		ctx, span := tracer.Start(ctx, "AccountFreezeHandler")
+		defer span.End()
 		if err := v.ValidateStruct(ctx, cmd); err != nil {
 			return nil, err
 		}

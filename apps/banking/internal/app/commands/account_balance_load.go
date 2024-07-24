@@ -13,6 +13,7 @@ import (
 	"github.com/9ssi7/banking/pkg/validation"
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type AccountBalanceLoad struct {
@@ -25,8 +26,10 @@ type AccountBalanceLoad struct {
 
 type AccountBalanceLoadHandler cqrs.HandlerFunc[AccountBalanceLoad, *cqrs.Empty]
 
-func NewAccountBalanceLoadHandler(v validation.Service, accountRepo abstracts.AccountRepo, transactionRepo abstracts.TransactionRepo) AccountBalanceLoadHandler {
+func NewAccountBalanceLoadHandler(tracer trace.Tracer, v validation.Service, accountRepo abstracts.AccountRepo, transactionRepo abstracts.TransactionRepo) AccountBalanceLoadHandler {
 	return func(ctx context.Context, cmd AccountBalanceLoad) (*cqrs.Empty, error) {
+		ctx, span := tracer.Start(ctx, "AccountBalanceLoadHandler")
+		defer span.End()
 		if err := v.ValidateStruct(ctx, cmd); err != nil {
 			return nil, err
 		}

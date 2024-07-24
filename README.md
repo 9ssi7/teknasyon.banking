@@ -9,11 +9,13 @@ I will make updates here. However, these updates are independent of the case. I 
 This is a simple banking API that allows you to create, update, delete and list bank accounts, load money into them and transfer money between them.
 
 ## Table of Contents
+- [Info](#info)
 - [Teknasyon Banking API](#teknasyon-banking-api)
   - [Table of Contents](#table-of-contents)
   - [Features](#features)
   - [Installation](#installation)
   - [Usage](#usage)
+  - [Observability](#observability)
     - [SMTP Credentials](#smtp-credentials)
     - [Authentication](#authentication)
     - [Load Balancing](#load-balancing)
@@ -110,6 +112,14 @@ Burn is enough to start the project. However, you can use the following commands
 - **Remove All Docker Assets**: `make clean-docker`
 - **Remove All Assets**: `make clean-all`
 - **Clean the project**: `make clean`
+
+## Observability
+
+The project uses Jaeger for tracing, Prometheus for monitoring and zipkin for distributed tracing. You can access the following URLs to monitor the project:
+
+- **Jaeger**: [http://localhost:16686](http://localhost:16686)
+- **Prometheus**: [http://localhost:9090](http://localhost:9090)
+- **Zipkin**: [http://localhost:9411](http://localhost:9411)
 
 ### SMTP Credentials
 

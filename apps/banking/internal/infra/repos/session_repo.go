@@ -39,16 +39,16 @@ func (s *sessionRepo) Save(ctx context.Context, userId uuid.UUID, session *aggre
 	return nil
 }
 
-func (s *sessionRepo) FindByIds(ctx context.Context, userId uuid.UUID, deviceId string) (*aggregates.Session, error) {
+func (s *sessionRepo) FindByIds(ctx context.Context, userId uuid.UUID, deviceId string) (*aggregates.Session, bool, error) {
 	key := s.calcKey(userId, deviceId)
-	e, _, err := s.getByKey(ctx, key)
+	e, notExists, err := s.getByKey(ctx, key)
 	if err != nil {
-		return nil, rescode.Failed(err)
+		return nil, false, rescode.Failed(err)
 	}
-	if e == nil {
-		return nil, rescode.NotFound(err)
+	if notExists {
+		return nil, true, nil
 	}
-	return e, nil
+	return e, false, nil
 }
 
 func (s *sessionRepo) FindAllByUserId(ctx context.Context, userId uuid.UUID) ([]*aggregates.Session, error) {
@@ -85,6 +85,9 @@ func (s *sessionRepo) calcKey(userId uuid.UUID, deviceId string) string {
 func (s *sessionRepo) getByKey(ctx context.Context, key string) (*aggregates.Session, bool, error) {
 	res, err := s.db.Get(ctx, key).Result()
 	if err != nil {
+		if err == redis.Nil {
+			return nil, true, nil
+		}
 		return nil, true, rescode.Failed(err)
 	}
 	var e aggregates.Session
