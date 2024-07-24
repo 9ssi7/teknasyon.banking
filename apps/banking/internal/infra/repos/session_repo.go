@@ -12,6 +12,7 @@ import (
 )
 
 type sessionRepo struct {
+	syncRepo
 	db *redis.Client
 }
 
@@ -22,6 +23,8 @@ func NewSessionRepo(db *redis.Client) abstracts.SessionRepo {
 }
 
 func (s *sessionRepo) Save(ctx context.Context, userId uuid.UUID, session *aggregates.Session) error {
+	s.syncRepo.Lock()
+	defer s.syncRepo.Unlock()
 	key := s.calcKey(userId, session.DeviceId)
 	bytes, err := json.Marshal(session)
 	if err != nil {

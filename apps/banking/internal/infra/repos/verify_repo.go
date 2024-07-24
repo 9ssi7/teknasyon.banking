@@ -12,6 +12,7 @@ import (
 )
 
 type verifyRepo struct {
+	syncRepo
 	db *redis.Client
 }
 
@@ -22,6 +23,8 @@ func NewVerifyRepo(db *redis.Client) abstracts.VerifyRepo {
 }
 
 func (r *verifyRepo) Save(ctx context.Context, token string, verify *aggregates.Verify) error {
+	r.syncRepo.Lock()
+	defer r.syncRepo.Unlock()
 	b, err := json.Marshal(verify)
 	if err != nil {
 		return rescode.Failed
