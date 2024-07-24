@@ -57,7 +57,7 @@ func (s *srv) ValidateStruct(ctx context.Context, sc interface{}) error {
 		}
 	}
 	if len(errors) > 0 {
-		return rescode.ValidationFailed().SetData(errors)
+		return rescode.ValidationFailed(nil).SetData(errors)
 	}
 	return nil
 }
@@ -89,7 +89,7 @@ func (s *srv) ValidateMap(ctx context.Context, m map[string]interface{}, rules m
 		element.Value = m[key]
 		errors = append(errors, &element)
 	}
-	return rescode.ValidationFailed().SetData(errors)
+	return rescode.ValidationFailed(nil).SetData(errors)
 }
 
 func (s *srv) getTranslator(ctx context.Context) ut.Translator {
