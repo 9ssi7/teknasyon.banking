@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"errors"
 
 	"github.com/9ssi7/banking/internal/domain/abstracts"
 	"github.com/9ssi7/banking/internal/domain/entities"
@@ -29,7 +30,7 @@ func NewAuthRegisterHandler(v validation.Service, userRepo abstracts.UserRepo) A
 			return nil, err
 		}
 		if exists {
-			return nil, rescode.EmailAlreadyExists
+			return nil, rescode.EmailAlreadyExists(errors.New("email already exists"))
 		}
 		u := entities.NewUser(cmd.Name, cmd.Email)
 		err = userRepo.Save(ctx, u)

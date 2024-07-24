@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"errors"
 
 	"github.com/9ssi7/banking/config"
 	"github.com/9ssi7/banking/internal/domain/abstracts"
@@ -46,23 +47,23 @@ func NewMoneyTransferHandler(v validation.Service, userRepo abstracts.UserRepo, 
 		}
 		toAccount, err := accountRepo.FindByIbanAndOwner(ctx, cmd.ToIban, cmd.ToOwner)
 		if err != nil {
-			return nil, onError(ctx, rescode.AccountNotFound)
+			return nil, onError(ctx, rescode.AccountNotFound(err))
 		}
 		account, err := accountRepo.FindByUserIdAndId(ctx, cmd.UserId, cmd.AccountId)
 		if err != nil {
 			return nil, onError(ctx, err)
 		}
 		if !account.IsAvailable() {
-			return nil, onError(ctx, rescode.AccountNotAvailable)
+			return nil, onError(ctx, rescode.AccountNotAvailable(errors.New("sender account not available")))
 		}
 		if !toAccount.IsAvailable() {
-			return nil, onError(ctx, rescode.ToAccountNotAvailable)
+			return nil, onError(ctx, rescode.ToAccountNotAvailable(errors.New("to account not available")))
 		}
 		if account.Id == toAccount.Id {
-			return nil, onError(ctx, rescode.AccountTransferToSameAccount)
+			return nil, onError(ctx, rescode.AccountTransferToSameAccount(errors.New("transfer to same account")))
 		}
 		if account.Currency != toAccount.Currency {
-			return nil, onError(ctx, rescode.AccountCurrencyMismatch)
+			return nil, onError(ctx, rescode.AccountCurrencyMismatch(errors.New("currency mismatch")))
 		}
 		amountToTransfer, err := decimal.NewFromString(cmd.Amount)
 		if err != nil {
@@ -74,7 +75,7 @@ func NewMoneyTransferHandler(v validation.Service, userRepo abstracts.UserRepo, 
 		}
 
 		if !account.CanCredit(amountToPay) {
-			return nil, onError(ctx, rescode.AccountBalanceInsufficient)
+			return nil, onError(ctx, rescode.AccountBalanceInsufficient(errors.New("sender account balance insufficient")))
 		}
 
 		transaction := entities.NewTransaction(account.Id, toAccount.Id, amountToTransfer, cmd.Description, valobj.TransactionKindTransfer)

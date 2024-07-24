@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"errors"
 
 	"github.com/9ssi7/banking/internal/domain/abstracts"
 	"github.com/9ssi7/banking/internal/domain/entities"
@@ -34,11 +35,11 @@ func NewAccountBalanceLoadHandler(v validation.Service, accountRepo abstracts.Ac
 			return nil, err
 		}
 		if !account.IsAvailable() {
-			return nil, rescode.AccountNotAvailable
+			return nil, rescode.AccountNotAvailable(errors.New("sender account not available"))
 		}
 		amount, err := decimal.NewFromString(cmd.Amount)
 		if err != nil {
-			return nil, rescode.Failed
+			return nil, rescode.Failed(err)
 		}
 		account.Credit(amount)
 		if err := accountRepo.Save(ctx, account); err != nil {

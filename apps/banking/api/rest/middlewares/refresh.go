@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"errors"
 	"time"
 
 	"github.com/9ssi7/banking/config"
@@ -14,7 +15,7 @@ import (
 func RefreshRequired(c *fiber.Ctx) error {
 	u := c.Locals("user_refresh")
 	if u == nil || u.(*token.UserClaim).IsExpired() || !u.(*token.UserClaim).IsRefresh {
-		return rescode.Unauthorized
+		return rescode.Unauthorized(errors.New("refresh required"))
 	}
 	return c.Next()
 }
@@ -24,7 +25,7 @@ func RefreshExcluded(c *fiber.Ctx) error {
 	if u == nil || u.(*token.UserClaim).IsExpired() || !u.(*token.UserClaim).IsRefresh {
 		return c.Next()
 	}
-	return rescode.InvalidRefreshToken
+	return rescode.InvalidRefreshToken(errors.New("refresh excluded"))
 }
 
 func NewRefreshInitialize(app app.App) fiber.Handler {

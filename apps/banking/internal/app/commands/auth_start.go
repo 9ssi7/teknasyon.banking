@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"errors"
 
 	"github.com/9ssi7/banking/internal/domain/abstracts"
 	"github.com/9ssi7/banking/internal/domain/aggregates"
@@ -46,13 +47,13 @@ func NewAuthStartHandler(v validation.Service, verifyRepo abstracts.VerifyRepo, 
 			}
 		}
 		if user == nil {
-			return nil, rescode.NotFound
+			return nil, rescode.NotFound(errors.New("user not found"))
 		}
 		if !user.IsActive {
-			return nil, rescode.UserDisabled
+			return nil, rescode.UserDisabled(errors.New("user disabled"))
 		}
 		if user.TempToken != nil && *user.TempToken != "" {
-			return nil, rescode.UserVerifyRequired
+			return nil, rescode.UserVerifyRequired(errors.New("user verify required"))
 		}
 		verifyToken := uuid.New().String()
 		verify := aggregates.NewVerify(user.Id, state.GetDeviceId(ctx), state.GetLocale(ctx))

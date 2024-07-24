@@ -57,13 +57,12 @@ func New(app app.App) Srv {
 func (s srv) ErrorHandler() fiber.ErrorHandler {
 	return func(c *fiber.Ctx, err error) error {
 		code := fiber.StatusBadRequest
-		fmt.Println(err.Error())
-		if e, ok := err.(*rescode.RC); ok {
-			msg := e.Message
-			if e.Translateable {
-				// msg = translator.Translate(e.Message, i18n.ParseLocale(c))
+		if res, ok := err.(*rescode.RC); ok {
+			msg := res.Message
+			for _, err := range res.Errors() {
+				fmt.Println("Error:", err.Error())
 			}
-			return c.Status(e.HttpStatus).JSON(e.JSON(msg))
+			return c.Status(res.StatusCode).JSON(res.JSON(msg))
 		}
 		if e, ok := err.(*fiber.Error); ok {
 			code = e.Code

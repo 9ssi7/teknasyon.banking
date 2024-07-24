@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"errors"
 
 	"github.com/9ssi7/banking/internal/domain/abstracts"
 	"github.com/9ssi7/banking/internal/domain/aggregates"
@@ -37,10 +38,10 @@ func NewAuthLoginHandler(v validation.Service, userRepo abstracts.UserRepo, veri
 			return nil, err
 		}
 		if verify.IsExpired() {
-			return nil, rescode.VerificationExpired
+			return nil, rescode.VerificationExpired(errors.New("verification expired"))
 		}
 		if verify.IsExceeded() {
-			return nil, rescode.VerificationExceeded
+			return nil, rescode.VerificationExceeded(errors.New("verification exceeded"))
 		}
 		if cmd.Code != verify.Code {
 			verify.IncTryCount()
@@ -48,7 +49,7 @@ func NewAuthLoginHandler(v validation.Service, userRepo abstracts.UserRepo, veri
 			if err != nil {
 				return nil, err
 			}
-			return nil, rescode.VerificationInvalid
+			return nil, rescode.VerificationInvalid(errors.New("verification invalid"))
 		}
 		err = verifyRepo.Delete(ctx, cmd.VerifyToken, state.GetDeviceId(ctx))
 		if err != nil {
@@ -65,7 +66,7 @@ func NewAuthLoginHandler(v validation.Service, userRepo abstracts.UserRepo, veri
 			Roles: user.Roles,
 		})
 		if err != nil {
-			return nil, rescode.Failed
+			return nil, rescode.Failed(err)
 		}
 		ses := aggregates.NewSession(*cmd.Device, state.GetDeviceId(ctx), accessToken, refreshToken)
 		if err = sessionRepo.Save(ctx, user.Id, ses); err != nil {

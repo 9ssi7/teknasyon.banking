@@ -2,6 +2,7 @@ package queries
 
 import (
 	"context"
+	"errors"
 
 	"github.com/9ssi7/banking/internal/domain/abstracts"
 	"github.com/9ssi7/banking/pkg/cqrs"
@@ -32,14 +33,14 @@ func NewAuthVerifyAccessHandler(sessionRepo abstracts.SessionRepo) AuthVerifyAcc
 			claims, err = token.Client().VerifyAndParse(query.AccessToken)
 		}
 		if err != nil {
-			return nil, rescode.Failed
+			return nil, rescode.Failed(err)
 		}
 		session, err := sessionRepo.FindByIds(ctx, claims.Id, state.GetDeviceId(ctx))
 		if err != nil {
 			return nil, err
 		}
 		if !session.IsAccessValid(query.AccessToken, query.IpAddr) {
-			return nil, rescode.InvalidAccess
+			return nil, rescode.InvalidAccess(errors.New("invalid access with token and ip"))
 		}
 		return &AuthVerifyAccessRes{
 			User: claims,

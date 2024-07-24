@@ -1,5 +1,9 @@
 package rescode
 
+// any is a type alias for interface{}.
+// It is used to store any type of data.
+type R map[string]interface{}
+
 // RC is a struct that contains the code, message, http status, and translateable.
 // Code is the code of the error.
 type RC struct {
@@ -10,51 +14,32 @@ type RC struct {
 	// Message is the message of the error.
 	Message string
 
-	// HttpStatus is the http status of the error.
-	HttpStatus int
-
-	// Translateable is the flag to determine whether the message is translatable.
-	Translateable bool
+	// StatusCode is the http/rpc status code of the error.
+	StatusCode int
 
 	// Data is the data of the error.
 	Data any
+
+	// Error is the error of the error. (if the error is not nil)
+	errors []error
 }
 
-// Extra is a struct that contains the http status and translateable.
-type Extra struct {
-	// HttpStatus is the http status of the error.
-	HttpStatus int
-
-	// Translateable is the flag to determine whether the message is translatable.
-	Translateable bool
-}
-
-// DefaultConfig is a default configuration for the RC.
-// HttpStatus is 400 and Translateable is true.
-// if you want to change the default configuration, you can change the value here.
-// Example:
-//
-//	rescode.DefaultConfig = rescode.Extra{
-//		HttpStatus:    500,
-//		Translateable: false,
-//	}
-var DefaultConfig = Extra{
-	HttpStatus:    400,
-	Translateable: true,
-}
+type RcCreator func(err ...error) *RC
 
 // New is a function to create a new RC.
-func New(code uint64, message string, data any, extra ...Extra) *RC {
-	e := DefaultConfig
-	if len(extra) > 0 {
-		e = extra[0]
+func New(code uint64, status int, message string, data ...any) RcCreator {
+	var d any
+	if len(data) > 0 {
+		d = data[0]
 	}
-	return &RC{
-		Code:          code,
-		Message:       message,
-		Data:          data,
-		HttpStatus:    e.HttpStatus,
-		Translateable: e.Translateable,
+	return func(err ...error) *RC {
+		return &RC{
+			Code:       code,
+			Message:    message,
+			Data:       d,
+			StatusCode: status,
+			errors:     err,
+		}
 	}
 }
 
@@ -76,7 +61,19 @@ func (r *RC) JSON(msgs ...string) map[string]interface{} {
 	return json
 }
 
+func (r *RC) SetData(data any) *RC {
+	r.Data = data
+	return r
+}
+
 // Error is a function to return the message of the RC.
 func (r *RC) Error() string {
+	if len(r.errors) > 0 {
+		return r.errors[0].Error()
+	}
 	return r.Message
+}
+
+func (r *RC) Errors() []error {
+	return r.errors
 }
