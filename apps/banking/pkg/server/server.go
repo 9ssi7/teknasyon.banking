@@ -1,6 +1,8 @@
 package server
 
-import "time"
+import (
+	"context"
+)
 
 // Server is the interface that must be implemented by a server
 // It is used to listen for requests
@@ -16,5 +18,5 @@ type Listener interface {
 	// Shutdown is used to shutdown the server
 	// The Shutdown method returns an error
 	// The error is nil if the server is shutdown successfully
-	Shutdown(time.Duration) error
+	Shutdown(context.Context) error
 }

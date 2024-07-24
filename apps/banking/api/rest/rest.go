@@ -1,8 +1,8 @@
 package rest
 
 import (
+	"context"
 	"fmt"
-	"time"
 
 	"github.com/9ssi7/banking/api/rest/routes"
 	restsrv "github.com/9ssi7/banking/api/rest/srv"
@@ -48,6 +48,6 @@ func (s srv) Listen() error {
 	return s.fiber.Listen(fmt.Sprintf("%v:%v", configs.Http.Host, configs.Http.Port))
 }
 
-func (s srv) Shutdown(t time.Duration) error {
-	return s.fiber.ShutdownWithTimeout(t)
+func (s srv) Shutdown(ctx context.Context) error {
+	return s.fiber.ShutdownWithContext(ctx)
 }
